@@ -1,0 +1,8 @@
+Divide window into 3 primary areas
+Bar - Runs the full width of the bottom 10%(?) of the screen
+Art - Left 50% of upper area
+Control - Right 50% of upper area
+
+I consider 4 methods for dealing with the issue of the album art getting in the way of the controls in unusually cramped window ratios. Variable size albumart seems obvious but would look terrible, a variable fade effect on the album art would perhaps look a bit better but still clunky and making the art simply disappear would be effective but lack the kind of finesse required to make overall use feel good.
+
+The best solution is to use a variable opacity on the album art so that when the ratio between window size and album art area size falls below a certain threshold, the album art opacity is reduced until at 1:1 ratio the art disappears. This should retain a sufficient feel of control of for the user as it is visually obvious what is happening, while ensuring that the display never feels cluttered and unusable.
