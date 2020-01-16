@@ -62,3 +62,23 @@ now, set Landscape areas
   AlbumArtArea.width = AlbumArtSize
   AlbumArtArea.height = AlbumArtSize
   AlbumArtArea.top = int((Artwork.height - AlbumArtArea.width) / 2)
+
+---
+
+Advanced; use fixed width to allow Control to "overlap" Art.
+For this to work, I need a method to figure out the minimum width that can be applied to Art and Control before overlap method is used. Overlap method "slides" Control area over Art area, which is visually achieved by lowering the opacity of the AlbumArtArea until complete overlap puts opacity at 0%.
+
+For this method to work, I believe there needs to be a relationship between the standard 16:9 ratio and the albumart.
+
+ie. if we assume a standard 16:9 window with square artwork, the overlap method will start if the width of the window is reduced from the default value.
+
+correction: 1280x800 is 16:10 and looks fine, so the base ratio does not need to be 16:9. Anything lower (width-wise) than 3:2 seems like it wants the overlap effect.
+
+This means the fixed minimum width is window.height * 3 / 2. Height must be used because it is "fixed" against width.
+
+If overlap is required;
+fixed width = window.height * 3 / 2
+ControlArea width = fixed width
+opacity is set against a scale defined as 0 (window.width = fixed width or total overlap) and 100 (?)
+
+EDIT: scratch that. ratio to be checked should be the artArea, not the window

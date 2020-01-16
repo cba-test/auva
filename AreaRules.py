@@ -80,6 +80,24 @@ def resizeMainPanel(event):
 	windowCanvas.coords(controlAreaRectangle, window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height)
 	windowCanvas.coords(albumArtAreaRectangle, window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height)
 
+	print('Window: ', window.top, window.left, window.width, window.height)
+
+	artRatio = float(window.artArea.width)/window.artArea.height
+	print(artRatio)
+
+	if artRatio <= 0.8:
+		fixedWidth = window.barArea.top * 0.8
+		print('Overlap: ', fixedWidth, window.artArea.width, window.width)
+		# when window.width = fixedWidth, we've got complete overlap and therefore 0% opacity
+
+		albumArtOpacity = ((window.width - fixedWidth) * 100) / fixedWidth
+		if albumArtOpacity < 0:
+			albumArtOpacity = 0
+		print('Opacity: ', albumArtOpacity)
+	else:
+		print('No Overlap')
+
+
 # declare window
 window = playbackWindow()
 
