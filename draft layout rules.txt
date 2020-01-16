@@ -19,6 +19,8 @@ so.. AlbumArtArea height/width is set as 92% (100% minus two margins of 4% each)
 
 AlbumArtArea is treated as a square - making non-square AlbumArt images fit is a seperate issue.
 
+EDIT: not happy with vertical alignment of albumArtArea when using width to define margin - would prefer albumArtArea to be vertically centred
+
 So, firstly, defined Area class
 
 Area:
@@ -46,11 +48,17 @@ now, set Landscape areas
  if Artwork.width > Artwork.height:
   AlbumArtMargin = int(Artwork.height * 0.04)
   AlbumArtSize = int(Artwork.height * 0.92)
+
+  AlbumArtArea.top = AlbumArtMargin
+  AlbumArtArea.left = AlbumArtMargin
+  AlbumArtArea.width = AlbumArtSize
+  AlbumArtArea.height = AlbumArtSize
  else:
+  # insert method for vertically centred albumArtArea
   AlbumArtMargin = int(Artwork.width * 0.04)
   AlbumArtSize = int(Artwork.width * 0.92)
 
- AlbumArtArea.top = AlbumArtMargin
- AlbumArtArea.left = AlbumArtMargin
- AlbumArtArea.width = AlbumArtSize
- AlbumArtArea.height = AlbumArtSize
+  AlbumArtArea.left = AlbumArtMargin
+  AlbumArtArea.width = AlbumArtSize
+  AlbumArtArea.height = AlbumArtSize
+  AlbumArtArea.top = int((Artwork.height - AlbumArtArea.width) / 2)
