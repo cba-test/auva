@@ -1,0 +1,56 @@
+Layout is defined by rules or script of sorts
+Landscape
+Three main panels
+1. Artwork - left 50% wof window, upper 88% of window
+2. Control - right 50% of window, upper 88% of window
+3. Bar - full width of window, bottom 12% of window
+
+1080 - 150 = 930
+
+Artwork contains AlbumArtArea panel
+852 art
+930 - 852 = 78/2 = 39px margin
+so margins are set using vertical
+artwork size is set, how?
+hortizontal; 1920/2=960 so 39px margin is roughly 4%
+vertical; 930 means 39px margins is roughly 4.2%
+
+so.. AlbumArtArea height/width is set as 92% (100% minus two margins of 4% each) of Artwork panel width or height, whichever is smaller.
+
+AlbumArtArea is treated as a square - making non-square AlbumArt images fit is a seperate issue.
+
+So, firstly, defined Area class
+
+Area:
+ top - int
+ left - int
+ width - int
+ height - int
+
+now, set Landscape areas
+ Bar.left = 0
+ Bar.width = window.width
+ Bar.height = int(window.height * 0.88) 
+ Bar.top = window.height - Bar.height
+
+ Artwork.top = 0
+ Artwork.left = 0
+ Artwork.width = int(window.width / 2)
+ Artwork.height = Bar.top
+
+ Control.top = 0
+ Control.left = window.width - Artwork.width
+ Control.width = Artwork.width
+ Control.height = Bar.top
+
+ if Artwork.width > Artwork.height:
+  AlbumArtMargin = int(Artwork.height * 0.04)
+  AlbumArtSize = int(Artwork.height * 0.92)
+ else:
+  AlbumArtMargin = int(Artwork.width * 0.04)
+  AlbumArtSize = int(Artwork.width * 0.92)
+
+ AlbumArtArea.top = AlbumArtMargin
+ AlbumArtArea.left = AlbumArtMargin
+ AlbumArtArea.width = AlbumArtSize
+ AlbumArtArea.height = AlbumArtSize
