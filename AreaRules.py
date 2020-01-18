@@ -75,28 +75,35 @@ def resizeMainPanel(event):
 
 	windowCanvas.config(width=window.width, height=window.height)
 
+	print('Window: ', window.top, window.left, window.width, window.height)
+
+	# new ratio method
+	# 0.8 is 80%, so the minimum width of controlArea should be 80% of the height of window minus the height of the barArea
+	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
+	print('minimumControlWidth: ', minimumControlWidth)
+	if window.controlArea.width < minimumControlWidth:
+		virtualArtArea = window.width - minimumControlWidth
+		if virtualArtArea < 0:
+			virtualArtArea = 0
+		albumArtOpacity = int((virtualArtArea / minimumControlWidth) * 100)
+		print('Overlap: ',  albumArtOpacity)
+
+		window.controlArea.left = window.width - minimumControlWidth
+		window.controlArea.width = minimumControlWidth
+		if window.controlArea.left < 0:
+			# if controlArea has completely overlapped artArea, resize to fit window width properly
+			window.controlArea.left = 0
+			window.controlArea.width = window.width
+	else:
+		albumArtOpacity = 100
+		print('No Overlap')
+
+	print('controlArea left: ', window.controlArea.left)
+
 	windowCanvas.coords(barAreaRectangle, window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height)
 	windowCanvas.coords(artAreaRectangle, window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height)
 	windowCanvas.coords(controlAreaRectangle, window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height)
 	windowCanvas.coords(albumArtAreaRectangle, window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height)
-
-	print('Window: ', window.top, window.left, window.width, window.height)
-
-	artRatio = float(window.artArea.width)/window.artArea.height
-	print(artRatio)
-
-	if artRatio <= 0.8:
-		fixedWidth = window.barArea.top * 0.8
-		print('Overlap: ', fixedWidth, window.artArea.width, window.width)
-		# when window.width = fixedWidth, we've got complete overlap and therefore 0% opacity
-
-		albumArtOpacity = ((window.width - fixedWidth) * 100) / fixedWidth
-		if albumArtOpacity < 0:
-			albumArtOpacity = 0
-		print('Opacity: ', albumArtOpacity)
-	else:
-		print('No Overlap')
-
 
 # declare window
 window = playbackWindow()
