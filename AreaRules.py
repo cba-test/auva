@@ -66,17 +66,22 @@ def landscapeZones(window):
 	# 0.8 is 80%, so the minimum width of controlArea should be 80% of the height of window minus the height of the barArea
 	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
 	print('minimumControlWidth: ', minimumControlWidth)
+	albumArtTopModifier = 0
 	if window.controlArea.width < minimumControlWidth:
 		virtualArtArea = window.width - minimumControlWidth
 		if virtualArtArea < 0:
 			virtualArtArea = 0
 		albumArtOpacity = int((virtualArtArea / minimumControlWidth) * 100)
-		print('Overlap: ',  albumArtOpacity)
+		print('Overlap opacity: ',  albumArtOpacity)
 		overlap = True
 
 		window.controlArea.left = window.width - minimumControlWidth
 		window.controlArea.width = minimumControlWidth
 		if window.controlArea.left < 0:
+			# if overlap opacity < 0 then window is becoming portrait mode
+			# need to define portrait mode so I can define the transition between this point and full portrait mode
+			albumArtTopModifier = window.controlArea.left
+
 			# if controlArea has completely overlapped artArea, resize to fit window width properly
 			window.controlArea.left = 0
 			window.controlArea.width = window.width
@@ -108,7 +113,9 @@ def landscapeZones(window):
 		window.albumArtArea.left = AlbumArtMargin
 		window.albumArtArea.width = AlbumArtSize
 		window.albumArtArea.height = AlbumArtSize
-		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2)
+		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2) + albumArtTopModifier
+		if window.albumArtArea.top < AlbumArtMargin:
+			window.albumArtArea.top = AlbumArtMargin
 
 	# controlButtonsArea
 	mainControlButtonSize = 100
@@ -118,14 +125,17 @@ def landscapeZones(window):
 	window.controlButtonsArea.height = mainControlButtonSize
 	window.controlButtonsArea.top = window.controlArea.top + int (window.controlArea.height / 2) - int(window.controlButtonsArea.height / 2)
 	window.controlButtonsArea.width = window.controlArea.height - (generalMargin * 2)
-	if window.controlButtonsArea.width > (window.controlButtonsArea.height * 7):
-		# check overall maximum width
-		window.controlButtonsArea.width = window.controlButtonsArea.height * 7
-	elif window.controlButtonsArea.width > minimumControlWidth:
+	if window.controlButtonsArea.width > minimumControlWidth:
 		# check overlap sizing fits
+		print('force overlap width')
 		window.controlButtonsArea.width = window.albumArtArea.height
+	elif window.controlButtonsArea.width > (window.controlButtonsArea.height * 7):
+		# check overall maximum width
+		print('force maximum width')
+		window.controlButtonsArea.width = window.controlButtonsArea.height * 7
 	elif window.controlButtonsArea.width < (window.controlButtonsArea.height * 5):
 		# check overall minimum width
+		print('force minimum width')
 		window.controlButtonsArea.width = window.controlButtonsArea.height * 5
 	window.controlButtonsArea.left = window.controlArea.left + int(window.controlArea.width / 2) - (window.controlButtonsArea.width / 2)
 
@@ -138,11 +148,6 @@ def landscapeZones(window):
 	window.playButtonArea.width = mainControlButtonSize
 	window.playButtonArea.height = mainControlButtonSize
 
-	# alt method
-	# align nextButtonArea.left with window.controlButtonsArea.left + controlButtonsInnerMargin
-	# align previous ButtonArea.left with window.controlButtonsArea.left + window.controlButtonsArea.width - controlButtonsInnerMargin - window.previousButtonArea.width
-	# apply maximum width algorithm to window.controlButtonsArea.left and window.controlButtonsArea.width
-
 	# nextButtonArea
 	window.nextButtonArea.width = lesserControlButtonSize
 	window.nextButtonArea.height = lesserControlButtonSize
@@ -154,7 +159,6 @@ def landscapeZones(window):
 	window.previousButtonArea.height = lesserControlButtonSize
 	window.previousButtonArea.left = window.controlButtonsArea.left + window.controlButtonsArea.width - controlButtonsInnerMargin - window.previousButtonArea.width
 	window.previousButtonArea.top = window.controlButtonsArea.top + controlButtonsInnerMargin
-
 
 	# titleTextArea, albumTextArea and artistTextArea vertical positioning is relative
 	# lower limit is window.controlArea.height - general margin
@@ -202,12 +206,11 @@ def resizeMainPanel(event):
 
 	landscapeZones(window)
 
+	print('------------------------')
+
 	windowCanvas.config(width=window.width, height=window.height)
 
 	print('Window: ', window.top, window.left, window.width, window.height)
-
-	print('metadataArea top: ', window.metadataArea.top)
-	print('metadataArea height: ', window.metadataArea.height)
 
 	windowCanvas.coords(barAreaRectangle, window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height)
 
