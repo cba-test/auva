@@ -111,40 +111,49 @@ def landscapeZones(window):
 		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2)
 
 	# controlButtonsArea
-	# this entire section is based off the wrong elements - it should be based on an overall ratio to ensure logical minimum/maximum sizes and smooth transitions
+	mainControlButtonSize = 100
+	lesserControlButtonSize = 80
+	controlButtonsInnerMargin = int((mainControlButtonSize - lesserControlButtonSize) / 2)
 
-	window.controlButtonsArea.top = window.controlArea.top + int (window.controlArea.height / 2) - 50 # assuming height of controls is 100
-	window.controlButtonsArea.width = window.controlArea.width - (generalMargin * 2)
-	if window.controlButtonsArea.width > window.albumArtArea.width:
-		window.controlButtonsArea.width = window.albumArtArea.width
+	window.controlButtonsArea.height = mainControlButtonSize
+	window.controlButtonsArea.top = window.controlArea.top + int (window.controlArea.height / 2) - int(window.controlButtonsArea.height / 2)
+	window.controlButtonsArea.width = window.controlArea.height - (generalMargin * 2)
+	if window.controlButtonsArea.width > (window.controlButtonsArea.height * 7):
+		# check overall maximum width
+		window.controlButtonsArea.width = window.controlButtonsArea.height * 7
+	elif window.controlButtonsArea.width > minimumControlWidth:
+		# check overlap sizing fits
+		window.controlButtonsArea.width = window.albumArtArea.height
+	elif window.controlButtonsArea.width < (window.controlButtonsArea.height * 5):
+		# check overall minimum width
+		window.controlButtonsArea.width = window.controlButtonsArea.height * 5
 	window.controlButtonsArea.left = window.controlArea.left + int(window.controlArea.width / 2) - (window.controlButtonsArea.width / 2)
-	window.controlButtonsArea.height = 100
+
+	print('controlButtonsArea: ', window.controlButtonsArea.width, window.controlButtonsArea.height, minimumControlWidth)
 
 	# define control buttons
 	# playButtonArea
 	window.playButtonArea.left = window.controlButtonsArea.left + int(window.controlButtonsArea.width / 2) - 50
 	window.playButtonArea.top = window.controlButtonsArea.top
-	window.playButtonArea.width = window.controlButtonsArea.height
-	window.playButtonArea.height = window.controlButtonsArea.height
-
-	distanceModifier = 50
+	window.playButtonArea.width = mainControlButtonSize
+	window.playButtonArea.height = mainControlButtonSize
 
 	# alt method
-	# align nextButtonArea.left with window.controlButtonsArea.left + distanceModifier
-	# align previous ButtonArea.left with window.controlButtonsArea.left + window.controlButtonsArea.width - distanceModifier - window.previousButtonArea.width
+	# align nextButtonArea.left with window.controlButtonsArea.left + controlButtonsInnerMargin
+	# align previous ButtonArea.left with window.controlButtonsArea.left + window.controlButtonsArea.width - controlButtonsInnerMargin - window.previousButtonArea.width
 	# apply maximum width algorithm to window.controlButtonsArea.left and window.controlButtonsArea.width
 
 	# nextButtonArea
-	window.nextButtonArea.width = 80
-	window.nextButtonArea.height = 80
-	window.nextButtonArea.left = window.controlButtonsArea.left + distanceModifier
-	window.nextButtonArea.top = window.controlButtonsArea.top + int((window.controlButtonsArea.height - window.nextButtonArea.height) / 2)
+	window.nextButtonArea.width = lesserControlButtonSize
+	window.nextButtonArea.height = lesserControlButtonSize
+	window.nextButtonArea.left = window.controlButtonsArea.left + controlButtonsInnerMargin
+	window.nextButtonArea.top = window.controlButtonsArea.top + controlButtonsInnerMargin
 
 	# previousButtonArea
-	window.previousButtonArea.width = 80
-	window.previousButtonArea.height = 80
-	window.previousButtonArea.left = window.controlButtonsArea.left + window.controlButtonsArea.width - distanceModifier - window.previousButtonArea.width
-	window.previousButtonArea.top = window.controlButtonsArea.top + int((window.controlButtonsArea.height - window.previousButtonArea.height) / 2)
+	window.previousButtonArea.width = lesserControlButtonSize
+	window.previousButtonArea.height = lesserControlButtonSize
+	window.previousButtonArea.left = window.controlButtonsArea.left + window.controlButtonsArea.width - controlButtonsInnerMargin - window.previousButtonArea.width
+	window.previousButtonArea.top = window.controlButtonsArea.top + controlButtonsInnerMargin
 
 
 	# titleTextArea, albumTextArea and artistTextArea vertical positioning is relative
@@ -166,11 +175,6 @@ def landscapeZones(window):
 	titleHeightPX = int((window.metadataArea.height / 100) * titleHeightPC)
 	otherHeightPC = (100 - titleHeightPC) / 4
 	otherHeightPX = int((window.metadataArea.height / 100) * otherHeightPC)
-
-	print('titleHeightPC: ', titleHeightPC)
-	print('titleHeightPX: ', titleHeightPX)
-	print('otherHeightPC: ', otherHeightPC)
-	print('otherHeightPX: ', otherHeightPX)
 
 	# titleTextArea
 	window.titleTextArea.left = window.metadataArea.left
