@@ -126,9 +126,9 @@ def landscapeZones(window):
 
 	window.controlButtonsArea.height = mainControlButtonSize
 	window.controlButtonsArea.top = window.controlArea.top + int(window.controlArea.height / 2) - int(window.controlButtonsArea.height / 2)
-	window.controlButtonsArea.width = window.controlArea.height - (generalMargin * 2)
 	if overlap:
 		print('+++ overlap')
+		window.controlButtonsArea.width = window.controlArea.height - (generalMargin * 2)
 		if window.controlButtonsArea.width < (window.controlButtonsArea.height * 3) and (window.controlButtonsArea.height * 3) >= window.albumArtArea.height:
 			# check overall minimum width
 			print('force minimum width')
@@ -147,6 +147,7 @@ def landscapeZones(window):
 	else:
 		# with no overlap to worry about, controlButtonsArea.width can simply fit within controlArea.width
 		print('+++ no overlap')
+		window.controlButtonsArea.width = window.controlArea.width - (generalMargin * 2)
 		if window.controlButtonsArea.width < (window.controlButtonsArea.height * 3) and (window.controlButtonsArea.height * 3) >= window.controlArea.width:
 			# check overall minimum width
 			print('force minimum width')
@@ -162,8 +163,6 @@ def landscapeZones(window):
 	window.controlButtonsArea.left = window.controlArea.left + int(window.controlArea.width / 2) - (window.controlButtonsArea.width / 2)
 
 	print('=========')
-	print('window.controlButtonsArea.width >  (window.controlButtonsArea.height * 7):', window.controlButtonsArea.width, (window.controlButtonsArea.height * 7), (window.controlButtonsArea.width >  (window.controlButtonsArea.height * 7)))
-	print('(window.controlButtonsArea.height * 7) <= window.controlArea.width:', (window.controlButtonsArea.height * 7), window.controlArea.width,((window.controlButtonsArea.height * 7) <= window.controlArea.width))
 	print('minimumControlWidth: ', minimumControlWidth)
 	print('controlArea: ', window.controlArea.left, window.controlArea.top, window.controlArea.width, window.controlArea.height)
 	print('controlButtonsArea: ', window.controlButtonsArea.left, window.controlButtonsArea.top, window.controlButtonsArea.width, window.controlButtonsArea.height)
