@@ -31,6 +31,11 @@ class playbackWindow:
 	# define sub areas
 	albumArtArea = area()
 
+	controlZone = area()
+	titleZone = area()
+	albumZone = area()
+	artistZone = area()
+
 def landscapeZones(window):
 	# define main areas
 	window.barArea.left = 0
@@ -48,8 +53,32 @@ def landscapeZones(window):
 	window.controlArea.width = window.artArea.width
 	window.controlArea.height = window.barArea.top
 
+	# 0.8 is 80%, so the minimum width of controlArea should be 80% of the height of window minus the height of the barArea
+	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
+	print('minimumControlWidth: ', minimumControlWidth)
+	if window.controlArea.width < minimumControlWidth:
+		virtualArtArea = window.width - minimumControlWidth
+		if virtualArtArea < 0:
+			virtualArtArea = 0
+		albumArtOpacity = int((virtualArtArea / minimumControlWidth) * 100)
+		print('Overlap: ',  albumArtOpacity)
+		overlap = True
+
+		window.controlArea.left = window.width - minimumControlWidth
+		window.controlArea.width = minimumControlWidth
+		if window.controlArea.left < 0:
+			# if controlArea has completely overlapped artArea, resize to fit window width properly
+			window.controlArea.left = 0
+			window.controlArea.width = window.width
+	else:
+		albumArtOpacity = 100
+		print('No Overlap')
+		overlap = False
+
+	generalMargin = int(window.artArea.height * 0.04)
+
 	if window.artArea.width > window.artArea.height:
-		AlbumArtMargin = int(window.artArea.height * 0.04)
+		AlbumArtMargin = generalMargin
 		AlbumArtSize = window.artArea.height - (AlbumArtMargin * 2)
 
 		window.albumArtArea.top = AlbumArtMargin
@@ -58,12 +87,23 @@ def landscapeZones(window):
 		window.albumArtArea.height = AlbumArtSize
 	else:
 		AlbumArtMargin = int(window.artArea.width * 0.04)
-		AlbumArtSize = window.artArea.width  - (AlbumArtMargin * 2)
+		# fix albumArtSize when overlap is True
+		if overlap:
+			AlbumArtSize = window.controlArea.width - (AlbumArtMargin * 2)
+		else:
+			AlbumArtSize = window.artArea.width - (AlbumArtMargin * 2)
 
 		window.albumArtArea.left = AlbumArtMargin
 		window.albumArtArea.width = AlbumArtSize
 		window.albumArtArea.height = AlbumArtSize
 		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2)
+
+	window.controlZone.top = window.controlArea.top + int (window.controlArea.height / 2) - 50 # assuming height of controls is 100
+	window.controlZone.width = window.controlArea.width - (generalMargin * 2)
+	if window.controlZone.width > window.albumArtArea.width:
+		window.controlZone.width = window.albumArtArea.width
+	window.controlZone.left = window.width - generalMargin - window.controlZone.width
+	window.controlZone.height = 100
 
 def resizeMainPanel(event):
 	global window
@@ -77,33 +117,13 @@ def resizeMainPanel(event):
 
 	print('Window: ', window.top, window.left, window.width, window.height)
 
-	# new ratio method
-	# 0.8 is 80%, so the minimum width of controlArea should be 80% of the height of window minus the height of the barArea
-	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
-	print('minimumControlWidth: ', minimumControlWidth)
-	if window.controlArea.width < minimumControlWidth:
-		virtualArtArea = window.width - minimumControlWidth
-		if virtualArtArea < 0:
-			virtualArtArea = 0
-		albumArtOpacity = int((virtualArtArea / minimumControlWidth) * 100)
-		print('Overlap: ',  albumArtOpacity)
-
-		window.controlArea.left = window.width - minimumControlWidth
-		window.controlArea.width = minimumControlWidth
-		if window.controlArea.left < 0:
-			# if controlArea has completely overlapped artArea, resize to fit window width properly
-			window.controlArea.left = 0
-			window.controlArea.width = window.width
-	else:
-		albumArtOpacity = 100
-		print('No Overlap')
-
 	print('controlArea left: ', window.controlArea.left)
 
 	windowCanvas.coords(barAreaRectangle, window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height)
 	windowCanvas.coords(artAreaRectangle, window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height)
 	windowCanvas.coords(controlAreaRectangle, window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height)
 	windowCanvas.coords(albumArtAreaRectangle, window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height)
+	windowCanvas.coords(controlZoneRectangle, window.controlZone.left, window.controlZone.top, window.controlZone.left + window.controlZone.width, window.controlZone.top + window.controlZone.height)
 
 # declare window
 window = playbackWindow()
@@ -146,6 +166,10 @@ controlAreaRectangle = windowCanvas.create_rectangle(window.controlArea.left, wi
 
 # albumArtArea rectangle
 albumArtAreaRectangle = windowCanvas.create_rectangle(window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height, width=0, fill="green")
+
+# controlZone rectangle
+controlZoneRectangle = windowCanvas.create_rectangle(window.controlZone.left, window.controlZone.top, window.controlZone.left + window.controlZone.width, window.controlZone.top + window.controlZone.height, width=0, fill="white")
+
 mainPanel.bind( "<Configure>", resizeMainPanel)
 
 mainPanel.mainloop()
