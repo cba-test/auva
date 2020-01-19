@@ -32,15 +32,16 @@ class playbackWindow:
 	albumArtArea = area()
 
 	controlButtonsArea = area()
+	gapBeneathControlButtons = area()
+
+	playButtonArea = area()
+	nextButtonArea = area()
+	previousButtonArea = area()
 
 	metadataArea = area()
 	titleTextArea = area()
 	albumTextArea = area()
 	artistTextArea = area()
-
-	playButtonArea = area()
-	nextButtonArea = area()
-	previousButtonArea = area()
 
 def landscapeZones(window):
 	# define main areas
@@ -66,7 +67,7 @@ def landscapeZones(window):
 	# 0.8 is 80%, so the minimum width of controlArea should be 80% of the height of window minus the height of the barArea
 	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
 	print('minimumControlWidth: ', minimumControlWidth)
-	albumArtTopModifier = 0
+	portraitModeTransitionModifier = 0
 	if window.controlArea.width < minimumControlWidth:
 		virtualArtArea = window.width - minimumControlWidth
 		if virtualArtArea < 0:
@@ -78,9 +79,11 @@ def landscapeZones(window):
 		window.controlArea.left = window.width - minimumControlWidth
 		window.controlArea.width = minimumControlWidth
 		if window.controlArea.left < 0:
-			# if overlap opacity < 0 then window is becoming portrait mode
+			# if overlap opacity < 0 then window is transitioning into portrait mode
 			# need to define portrait mode so I can define the transition between this point and full portrait mode
-			albumArtTopModifier = window.controlArea.left
+			portraitModeTransitionModifier = window.controlArea.left
+			window.controlArea.top = -portraitModeTransitionModifier
+			window.controlArea.height = window.barArea.top - window.controlArea.top
 
 			# if controlArea has completely overlapped artArea, resize to fit window width properly
 			window.controlArea.left = 0
@@ -113,7 +116,7 @@ def landscapeZones(window):
 		window.albumArtArea.left = AlbumArtMargin
 		window.albumArtArea.width = AlbumArtSize
 		window.albumArtArea.height = AlbumArtSize
-		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2) + albumArtTopModifier
+		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2) + portraitModeTransitionModifier
 		if window.albumArtArea.top < AlbumArtMargin:
 			window.albumArtArea.top = AlbumArtMargin
 
@@ -139,7 +142,7 @@ def landscapeZones(window):
 		window.controlButtonsArea.width = window.controlButtonsArea.height * 5
 	window.controlButtonsArea.left = window.controlArea.left + int(window.controlArea.width / 2) - (window.controlButtonsArea.width / 2)
 
-	print('controlButtonsArea: ', window.controlButtonsArea.width, window.controlButtonsArea.height, minimumControlWidth)
+	print('controlButtonsArea: ', window.controlButtonsArea.top, window.controlButtonsArea.width, window.controlButtonsArea.height, minimumControlWidth)
 
 	# define control buttons
 	# playButtonArea
@@ -164,12 +167,26 @@ def landscapeZones(window):
 	# lower limit is window.controlArea.height - general margin
 	# upper limit is window.controlButtonsArea.top + window.controlButtonsArea.height + generalMargin
 	
+	# gapBeneathControlButtons
+	window.gapBeneathControlButtons.left = window.controlArea.left
+	window.gapBeneathControlButtons.width = window.controlArea.width
+	window.gapBeneathControlButtons.top = window.controlButtonsArea.top + window.controlButtonsArea.height
+	window.gapBeneathControlButtons.height = window.controlArea.height - window.gapBeneathControlButtons.top
+	print('generalMargin: ', generalMargin)
+	print('window.barArea.top: ', window.barArea.top)
+	print('window.gapBeneathControlButtons.top: ', window.gapBeneathControlButtons.top)
+	print('window.gapBeneathControlButtons.height: ', window.gapBeneathControlButtons.height)
+
 	# metadataArea
-	gapBeneathcontrolButtonsArea = (window.barArea.top - generalMargin) - (window.controlButtonsArea.top + window.controlButtonsArea.height)
+	metadataAreaHeightModifier = 0.6
 	window.metadataArea.left = window.controlArea.left + generalMargin
-	window.metadataArea.top = window.controlButtonsArea.top + window.controlButtonsArea.height + int(gapBeneathcontrolButtonsArea * 0.4)
-	window.metadataArea.width = window.controlArea.width - (generalMargin *2)
-	window.metadataArea.height = window.controlArea.height - generalMargin - window.metadataArea.top
+	window.metadataArea.top = window.gapBeneathControlButtons.top + int(window.gapBeneathControlButtons.height * (1 - metadataAreaHeightModifier))
+	print('window.metadataArea.top: ', window.metadataArea.top)
+	window.metadataArea.width = window.controlArea.width - (generalMargin * 2)
+	# window.metadataArea.height = window.controlArea.height - generalMargin - window.metadataArea.top
+	window.metadataArea.height = int(window.gapBeneathControlButtons.height * metadataAreaHeightModifier) - generalMargin
+	print('window.controlArea.height: ', window.controlArea.height)
+	print('window.metadataArea.height: ', window.metadataArea.height)
 
 	# metadataArea is split into 5 vertical sections
 	# uppermost (titleTextArea) is 24% of metedataZone.height
@@ -219,6 +236,8 @@ def resizeMainPanel(event):
 
 	windowCanvas.coords(controlAreaRectangle, window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height)
 	windowCanvas.coords(controlButtonsAreaRectangle, window.controlButtonsArea.left, window.controlButtonsArea.top, window.controlButtonsArea.left + window.controlButtonsArea.width, window.controlButtonsArea.top + window.controlButtonsArea.height)
+	windowCanvas.coords(gapBeneathControlButtonsRectangle, window.gapBeneathControlButtons.left, window.gapBeneathControlButtons.top, window.gapBeneathControlButtons.left + window.gapBeneathControlButtons.width, window.gapBeneathControlButtons.top + window.gapBeneathControlButtons.height)
+
 	windowCanvas.coords(playButtonAreaRectangle, window.playButtonArea.left, window.playButtonArea.top, window.playButtonArea.left + window.playButtonArea.width, window.playButtonArea.top + window.playButtonArea.height)
 	windowCanvas.coords(nextButtonAreaRectangle, window.nextButtonArea.left, window.nextButtonArea.top, window.nextButtonArea.left + window.nextButtonArea.width, window.nextButtonArea.top + window.nextButtonArea.height)
 	windowCanvas.coords(previousButtonAreaRectangle, window.previousButtonArea.left, window.previousButtonArea.top, window.previousButtonArea.left + window.previousButtonArea.width, window.previousButtonArea.top + window.previousButtonArea.height)
@@ -226,7 +245,7 @@ def resizeMainPanel(event):
 	windowCanvas.coords(metadataAreaRectangle, window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height)
 	windowCanvas.coords(titleTextAreaRectangle, window.titleTextArea.left, window.titleTextArea.top, window.titleTextArea.left + window.titleTextArea.width, window.titleTextArea.top + window.titleTextArea.height)
 	windowCanvas.coords(albumTextAreaRectangle, window.albumTextArea.left, window.albumTextArea.top, window.albumTextArea.left + window.albumTextArea.width, window.albumTextArea.top + window.albumTextArea.height)
-	windowCanvas.coords(artistTextAreaRectangle,window.artistTextArea.left, window.artistTextArea.top, window.artistTextArea.left + window.artistTextArea.width, window.artistTextArea.top + window.artistTextArea.height)
+	windowCanvas.coords(artistTextAreaRectangle, window.artistTextArea.left, window.artistTextArea.top, window.artistTextArea.left + window.artistTextArea.width, window.artistTextArea.top + window.artistTextArea.height)
 
 # declare window
 window = playbackWindow()
@@ -267,14 +286,18 @@ barAreaRectangle = windowCanvas.create_rectangle(window.barArea.left, window.bar
 artAreaRectangle = windowCanvas.create_rectangle(window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height, width=0, fill="#222222")
 
 # controlArea rectangle
-# controlAreaRectangle = windowCanvas.create_rectangle(window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height, width=0, fill="yellow")
-controlAreaRectangle = windowCanvas.create_rectangle(window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height, width=0, fill="#222222")
+controlAreaRectangle = windowCanvas.create_rectangle(window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height, width=0, fill="yellow")
+# controlAreaRectangle = windowCanvas.create_rectangle(window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height, width=0, fill="#222222")
 
 # albumArtArea rectangle
-albumArtAreaRectangle = windowCanvas.create_rectangle(window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height, width=0, fill="green")
+# albumArtAreaRectangle = windowCanvas.create_rectangle(window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height, width=0, fill="green")
+albumArtAreaRectangle = windowCanvas.create_rectangle(window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height, width=0)
 
 # controlButtonsArea rectangle
 controlButtonsAreaRectangle = windowCanvas.create_rectangle(window.controlButtonsArea.left, window.controlButtonsArea.top, window.controlButtonsArea.left + window.controlButtonsArea.width, window.controlButtonsArea.top + window.controlButtonsArea.height, width=0, fill="gray")
+
+# gapBeneathControlButtons rectangle
+gapBeneathControlButtonsRectangle = windowCanvas.create_rectangle(window.gapBeneathControlButtons.left, window.gapBeneathControlButtons.top, window.gapBeneathControlButtons.left + window.gapBeneathControlButtons.width, window.gapBeneathControlButtons.top + window.gapBeneathControlButtons.height, width=0, fill="Purple")
 
 # playButtonArea
 playButtonAreaRectangle = windowCanvas.create_rectangle(window.playButtonArea.left, window.playButtonArea.top, window.playButtonArea.left + window.playButtonArea.width, window.playButtonArea.top + window.playButtonArea.height, width=0, fill="white")
@@ -286,8 +309,8 @@ nextButtonAreaRectangle = windowCanvas.create_rectangle(window.nextButtonArea.le
 previousButtonAreaRectangle = windowCanvas.create_rectangle(window.previousButtonArea.left, window.previousButtonArea.top, window.previousButtonArea.left + window.previousButtonArea.width, window.previousButtonArea.top + window.previousButtonArea.height, width=0, fill="white")
 
 # metadataArea rectangle
-# metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height, width=0, fill="orange")
-metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height, width=0)
+metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height, width=0, fill="orange")
+# metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height, width=0)
 
 # titleTextArea rectangle
 titleTextAreaRectangle = windowCanvas.create_rectangle(window.titleTextArea.left, window.titleTextArea.top, window.titleTextArea.left + window.titleTextArea.width, window.titleTextArea.top + window.titleTextArea.height, width=0, fill="white")
