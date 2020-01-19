@@ -32,27 +32,33 @@ class playbackWindow:
 	albumArtArea = area()
 
 	controlZone = area()
+
+	metadataZone = area()
 	titleZone = area()
 	albumZone = area()
 	artistZone = area()
 
 def landscapeZones(window):
 	# define main areas
+	# barArea
 	window.barArea.left = 0
 	window.barArea.width = window.width
 	window.barArea.height = int(window.height * 0.12) 
 	window.barArea.top = window.height - window.barArea.height
 
+	# artArea
 	window.artArea.top = 0
 	window.artArea.left = 0
 	window.artArea.width = int(window.width / 2)
 	window.artArea.height = window.barArea.top
 
+	# controlArea
 	window.controlArea.top = 0
 	window.controlArea.left = window.width - window.artArea.width
 	window.controlArea.width = window.artArea.width
 	window.controlArea.height = window.barArea.top
 
+	# handle overlap
 	# 0.8 is 80%, so the minimum width of controlArea should be 80% of the height of window minus the height of the barArea
 	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
 	print('minimumControlWidth: ', minimumControlWidth)
@@ -75,8 +81,10 @@ def landscapeZones(window):
 		print('No Overlap')
 		overlap = False
 
+	# set generalMargin
 	generalMargin = int(window.artArea.height * 0.04)
 
+	# albumArtArea
 	if window.artArea.width > window.artArea.height:
 		AlbumArtMargin = generalMargin
 		AlbumArtSize = window.artArea.height - (AlbumArtMargin * 2)
@@ -98,12 +106,41 @@ def landscapeZones(window):
 		window.albumArtArea.height = AlbumArtSize
 		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2)
 
+	# controlZone
 	window.controlZone.top = window.controlArea.top + int (window.controlArea.height / 2) - 50 # assuming height of controls is 100
 	window.controlZone.width = window.controlArea.width - (generalMargin * 2)
 	if window.controlZone.width > window.albumArtArea.width:
 		window.controlZone.width = window.albumArtArea.width
 	window.controlZone.left = window.width - generalMargin - window.controlZone.width
 	window.controlZone.height = 100
+
+	# titleZone, albumZone and artistZone vertical positioning is relative
+	# lower limit is window.controlArea.height - general margin
+	# upper limit is window.controlZone.top + window.ControlZone.height + generalMargin
+	
+	# metadataZone
+	window.metadataZone.left = window.controlArea.left + generalMargin
+	window.metadataZone.top = window.controlZone.top + window.controlZone.height + generalMargin
+	window.metadataZone.width = window.controlArea.width - (generalMargin *2)
+	window.metadataZone.height = window.controlArea.height - generalMargin - window.metadataZone.top
+
+	# titleZone
+	window.artistZone.left = window.metadataZone.left
+	#
+	window.artistZone.top = window.metadataZone.width
+	#
+
+	# albumZone
+	window.albumZone.left = window.metadataZone.left
+	#
+	window.albumZone.top = window.metadataZone.width
+	#
+
+	# artistZone
+	window.artistZone.left = window.metadataZone.left
+	#
+	window.artistZone.top = window.metadataZone.width
+	#
 
 def resizeMainPanel(event):
 	global window
@@ -117,13 +154,15 @@ def resizeMainPanel(event):
 
 	print('Window: ', window.top, window.left, window.width, window.height)
 
-	print('controlArea left: ', window.controlArea.left)
+	print('metadataZone top: ', window.metadataZone.top)
+	print('metadataZone height: ', window.metadataZone.height)
 
 	windowCanvas.coords(barAreaRectangle, window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height)
 	windowCanvas.coords(artAreaRectangle, window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height)
 	windowCanvas.coords(controlAreaRectangle, window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height)
 	windowCanvas.coords(albumArtAreaRectangle, window.albumArtArea.left, window.albumArtArea.top, window.albumArtArea.left + window.albumArtArea.width, window.albumArtArea.top + window.albumArtArea.height)
 	windowCanvas.coords(controlZoneRectangle, window.controlZone.left, window.controlZone.top, window.controlZone.left + window.controlZone.width, window.controlZone.top + window.controlZone.height)
+	windowCanvas.coords(metadataZoneRectangle, window.metadataZone.left, window.metadataZone.top, window.metadataZone.left + window.metadataZone.width, window.metadataZone.top + window.metadataZone.height)
 
 # declare window
 window = playbackWindow()
@@ -169,6 +208,9 @@ albumArtAreaRectangle = windowCanvas.create_rectangle(window.albumArtArea.left, 
 
 # controlZone rectangle
 controlZoneRectangle = windowCanvas.create_rectangle(window.controlZone.left, window.controlZone.top, window.controlZone.left + window.controlZone.width, window.controlZone.top + window.controlZone.height, width=0, fill="white")
+
+# metadataZone rectangle
+metadataZoneRectangle = windowCanvas.create_rectangle(window.metadataZone.left, window.metadataZone.top, window.metadataZone.left + window.metadataZone.width, window.metadataZone.top + window.metadataZone.height, width=0, fill="black")
 
 mainPanel.bind( "<Configure>", resizeMainPanel)
 
