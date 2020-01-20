@@ -55,7 +55,11 @@ def landscapeZones(window):
 	# barArea
 	window.barArea.left = 0
 	window.barArea.width = window.width
-	window.barArea.height = int(window.height * 0.12) # set maximum height? extremely high portrait mode looks strange
+	window.barArea.height = int(window.height * 0.1) # set maximum height? extremely high portrait mode looks strange
+	if window.barArea.height > 100:
+		window.barArea.height = 100
+	elif window.barArea.height < 60:
+		window.barArea.height = 60
 	window.barArea.top = window.height - window.barArea.height
 
 	print('window.barArea.height:',window.barArea.height)
@@ -86,6 +90,8 @@ def landscapeZones(window):
 		print('Overlap opacity: ',  albumArtOpacity)
 		overlap = True
 
+		window.controlArea.top = 0
+		window.controlArea.ymod = 0
 		window.controlArea.left = window.width - minimumControlWidth
 		window.controlArea.width = minimumControlWidth
 		if window.controlArea.left < 0:
@@ -95,6 +101,14 @@ def landscapeZones(window):
 			window.controlArea.ymod = -portraitModeTransitionModifier * transitionAccelerator
 			window.controlArea.top = window.controlArea.ymod
 			window.controlArea.height = window.barArea.top - window.controlArea.top
+
+			if window.controlArea.height < (window.artArea.height * 0.66):
+				window.controlArea.height = window.artArea.height * 0.66
+				window.controlArea.top = window.barArea.top - window.controlArea.height # broken - top should stay fixed relative to the bottom of the artworkArea
+				print('***** enforce controlArea minimum height lock')
+				print('window.artArea.height:',window.artArea.height)
+				print('window.controlArea.top:',window.controlArea.top)
+				print('window.controlArea.height:',window.controlArea.height)
 
 			# if controlArea has completely overlapped artArea, resize to fit window width properly
 			window.controlArea.left = 0
