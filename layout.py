@@ -58,6 +58,8 @@ def landscapeZones(window):
 	window.barArea.height = int(window.height * 0.12) # set maximum height? extremely high portrait mode looks strange
 	window.barArea.top = window.height - window.barArea.height
 
+	print('window.barArea.height:',window.barArea.height)
+
 	# artArea
 	window.artArea.top = 0
 	window.artArea.left = 0
@@ -75,6 +77,7 @@ def landscapeZones(window):
 	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
 	print('minimumControlWidth: ', minimumControlWidth)
 	portraitModeTransitionModifier = 0
+	transitionAccelerator = 2
 	if window.controlArea.width < minimumControlWidth:
 		virtualArtArea = window.width - minimumControlWidth
 		if virtualArtArea < 0:
@@ -89,7 +92,7 @@ def landscapeZones(window):
 			# if overlap opacity < 0 then window is transitioning into portrait mode
 			# need to define portrait mode so I can define the transition between this point and full portrait mode
 			portraitModeTransitionModifier = window.controlArea.left
-			window.controlArea.ymod = -portraitModeTransitionModifier
+			window.controlArea.ymod = -portraitModeTransitionModifier * transitionAccelerator
 			window.controlArea.top = window.controlArea.ymod
 			window.controlArea.height = window.barArea.top - window.controlArea.top
 
@@ -123,7 +126,7 @@ def landscapeZones(window):
 		window.albumArtArea.left = AlbumArtMargin
 		window.albumArtArea.width = AlbumArtSize
 		window.albumArtArea.height = AlbumArtSize
-		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2) + portraitModeTransitionModifier
+		window.albumArtArea.top = int((window.artArea.height - window.albumArtArea.width) / 2) - window.controlArea.ymod
 		if window.albumArtArea.top < AlbumArtMargin:
 			window.albumArtArea.top = AlbumArtMargin
 
