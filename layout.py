@@ -148,11 +148,15 @@ def landscapeZones(window):
 	# catch to stop lower/upperControlArea getting too small
 	if window.controlArea.top + window.controlArea.ymod > window.albumArtArea.top + window.albumArtArea.height + generalMargin:
 		print('***** FORCE MINIMUM CONTROL AREA HEIGHT *****')
-		window.upperControlArea.top = window.albumArtArea.top + window.albumArtArea.height + generalMargin
-		artAreaHeightSplit = (window.barArea.top - generalMargin - window.upperControlArea.top) * lowerControlAreaHeightPC
-
-	artAreaHeightSplit = window.artArea.height * lowerControlAreaHeightPC - (window.controlArea.ymod * 0.5)
-	# artAreaHeightSplit = window.artArea.height * lowerControlAreaHeightPC
+		# window.upperControlArea.top = window.albumArtArea.top + window.albumArtArea.height + generalMargin
+		window.controlArea.top = window.albumArtArea.top + window.albumArtArea.height + generalMargin
+		window.controlArea.height = window.barArea.top - generalMargin - window.controlArea.top
+		artAreaHeightSplit = window.controlArea.height * lowerControlAreaHeightPC
+		controlAreaHeightLock = True
+	else:
+		controlAreaHeightLock = False
+		artAreaHeightSplit = window.artArea.height * lowerControlAreaHeightPC - (window.controlArea.ymod * 0.5)
+		# artAreaHeightSplit = window.artArea.height * lowerControlAreaHeightPC
 
 	print('==========')
 	print('window.controlArea.height:', window.controlArea.height)
