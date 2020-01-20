@@ -137,7 +137,7 @@ def landscapeZones(window):
 		if window.albumArtArea.top < AlbumArtMargin:
 			window.albumArtArea.top = AlbumArtMargin
 
-	# EXPERIMENTAL - upperControlArea and lowerControlArea vertically split the artArea into two parts
+	# upperControlArea and lowerControlArea vertically split the artArea into two parts
 	# controls go in upperControlArea, metadata go in lowerControlArea
 	# by splitting them up, this allows more dynamic movement between landscape and portrait modes as well as allowing simpler layout rules
 	lowerControlAreaHeightPC = 0.4 # 40% of artArea height
@@ -169,8 +169,8 @@ def landscapeZones(window):
 	window.lowerControlArea.width = window.controlArea.width - (generalMargin * 2)
 	window.lowerControlArea.height = artAreaHeightSplit - generalMargin
 	
-	print('window.upperControlArea.height:', window.upperControlArea.height)
-	print('window.lowerControlArea.height:', window.lowerControlArea.height)
+	verticalOpacityModifier = int(100 - (((window.albumArtArea.height + AlbumArtMargin) - window.upperControlArea.top) / (window.albumArtArea.height + AlbumArtMargin)) * 100)
+	print('>>>>>>>>>>>>>>>>>>albumArtOpacity',albumArtOpacity + verticalOpacityModifier)
 
 	# upperControlArea
 	window.upperControlArea.left = window.controlArea.left + generalMargin
