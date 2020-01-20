@@ -1,2 +1,6 @@
 if window.controlArea.top < window.albumArtArea.top + window.AlbumArtArea.height + generalMargin:
 	window.controlArea.top = window.albumArtArea.top + window.AlbumArtArea.height + generalMargin
+
+also
+
+window.controlArea.height = whatever - generalMargin
