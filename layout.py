@@ -54,6 +54,7 @@ def landscapeZones(window):
 	window.barArea.left = 0
 	window.barArea.width = window.width
 	window.barArea.height = int(window.height * 0.1) # set maximum height? extremely high portrait mode looks strange
+	# height needs to respect the overall aspect ratio of the window - the smaller the width of the window, the more the bar looks overly high
 	if window.barArea.height > 100:
 		window.barArea.height = 100
 	elif window.barArea.height < 50:
