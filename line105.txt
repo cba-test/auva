@@ -4,3 +4,5 @@ if window.controlArea.top < window.albumArtArea.top + window.AlbumArtArea.height
 also
 
 window.controlArea.height = whatever - generalMargin
+
+line 180 - the 0.66 should be a variable modifier that from 0.66 to something that puts controls in correct place when controlArea minimum height lock is in force
