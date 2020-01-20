@@ -1,5 +1,5 @@
-if window.controlArea.top < window.albumArtArea.top + window.AlbumArtArea.height + generalMargin:
-	window.controlArea.top = window.albumArtArea.top + window.AlbumArtArea.height + generalMargin
+if window.controlArea.top < window.albumArtArea.top + window.albumArtArea.height + generalMargin:
+	window.controlArea.top = window.albumArtArea.top + window.albumArtArea.height + generalMargin
 
 also
 

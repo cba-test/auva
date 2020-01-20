@@ -76,6 +76,9 @@ def landscapeZones(window):
 	window.controlArea.width = window.artArea.width
 	window.controlArea.height = window.barArea.top
 
+	# set generalMargin
+	generalMargin = int(window.artArea.height * 0.04)
+
 	# handle overlap
 	# 0.8 is 80%, so the minimum width of controlArea should be 80% of the height of window minus the height of the barArea
 	minimumControlWidth = 0.8 * (window.height - window.barArea.height)
@@ -100,15 +103,6 @@ def landscapeZones(window):
 			portraitModeTransitionModifier = window.controlArea.left
 			window.controlArea.ymod = -portraitModeTransitionModifier * transitionAccelerator
 			window.controlArea.top = window.controlArea.ymod
-			window.controlArea.height = window.barArea.top - window.controlArea.top
-
-			if window.controlArea.height < (window.artArea.height * 0.66):
-				window.controlArea.height = window.artArea.height * 0.66
-				window.controlArea.top = window.barArea.top - window.controlArea.height # broken - top should stay fixed relative to the bottom of the artworkArea
-				print('***** enforce controlArea minimum height lock')
-				print('window.artArea.height:',window.artArea.height)
-				print('window.controlArea.top:',window.controlArea.top)
-				print('window.controlArea.height:',window.controlArea.height)
 
 			# if controlArea has completely overlapped artArea, resize to fit window width properly
 			window.controlArea.left = 0
@@ -117,8 +111,7 @@ def landscapeZones(window):
 		albumArtOpacity = 100
 		overlap = False
 
-	# set generalMargin
-	generalMargin = int(window.artArea.height * 0.04)
+	window.controlArea.height = window.barArea.top - window.controlArea.top
 
 	# albumArtArea
 	if window.artArea.width > window.artArea.height:
@@ -151,6 +144,13 @@ def landscapeZones(window):
 	# artAreaHeightSplit needs modifier to shrink height when transitioning into portrait mode
 	# the same modifier should be applied to the upperControlArea.top and upperControlArea.height values with a further modifier to increase the effect
 	# the overall effect should be that the controlButtonArea reduces down to the right placement for true Portrait mode while the metadata stays more or less the same (within scaling constaints)
+
+	# catch to stop lower/upperControlArea getting too small
+	if window.controlArea.top + window.controlArea.ymod > window.albumArtArea.top + window.albumArtArea.height + generalMargin:
+		print('***** FORCE MINIMUM CONTROL AREA HEIGHT *****')
+		window.upperControlArea.top = window.albumArtArea.top + window.albumArtArea.height + generalMargin
+		artAreaHeightSplit = (window.barArea.top - generalMargin - window.upperControlArea.top) * lowerControlAreaHeightPC
+
 	artAreaHeightSplit = window.artArea.height * lowerControlAreaHeightPC - (window.controlArea.ymod * 0.5)
 	# artAreaHeightSplit = window.artArea.height * lowerControlAreaHeightPC
 
@@ -162,7 +162,7 @@ def landscapeZones(window):
 	window.lowerControlArea.left = window.controlArea.left + generalMargin
 	window.lowerControlArea.top = window.controlArea.top + window.controlArea.height - artAreaHeightSplit
 	window.lowerControlArea.width = window.controlArea.width - (generalMargin * 2)
-	window.lowerControlArea.height = artAreaHeightSplit
+	window.lowerControlArea.height = artAreaHeightSplit - generalMargin
 
 	# upperControlArea
 	window.upperControlArea.left = window.controlArea.left + generalMargin
