@@ -141,14 +141,14 @@ def landscapeZones(window):
 	# upperControlArea and lowerControlArea vertically split the artArea into two parts
 	# controls go in upperControlArea, metadata go in lowerControlArea
 	# by splitting them up, this allows more dynamic movement between landscape and portrait modes as well as allowing simpler layout rules
-	lowerControlAreaHeightPC = 0.4 # 40% of artArea height
-	lowerControlAreaHeightPCmodifier = 1 # link this modifier to the difference between window.albumArtArea.top + window.albumArtArea.height and window.upperControlArea.top
+	lowerControlAreaHeightPC = 0.3 # 40% of artArea height
+	upperControlAreaHeightPCmodifier = 1 # link this modifier to the difference between window.albumArtArea.top + window.albumArtArea.height and window.upperControlArea.top
 	# artAreaHeightSplit needs modifier to shrink height when transitioning into portrait mode
 	# the same modifier should be applied to the upperControlArea.top and upperControlArea.height values with a further modifier to increase the effect
 	# the overall effect should be that the controlButtonArea reduces down to the right placement for true Portrait mode while the metadata stays more or less the same (within scaling constaints)
 	print('==========')
 	# catch to stop lower/upperControlArea getting too small
-	# this also includes a method to adjust the lowerControlAreaHeightPCmodifier so that the metadata text doesn't become too small
+	# this also includes a method to adjust the upperControlAreaHeightPCmodifier so that the metadata text doesn't become too small
 	# if possible, this should be also be used to adjust the two gaps between the title text/album text and album text/artist text, although this would require a full rewrite of that section
 	if window.controlArea.top + window.controlArea.ymod > window.albumArtArea.top + window.albumArtArea.height:
 		print('***** FORCE MINIMUM CONTROL AREA HEIGHT *****')
@@ -159,8 +159,8 @@ def landscapeZones(window):
 		print('albumArt:',window.albumArtArea.top + window.albumArtArea.height)
 		print('controlAreaRatio:',controlAreaRatio)
 		if overlap:
-			lowerControlAreaHeightPCmodifier = 1 + (controlAreaRatio * 0.2)
-		artAreaHeightSplit = (window.barArea.top - window.upperControlArea.top) * (lowerControlAreaHeightPC * lowerControlAreaHeightPCmodifier)
+			upperControlAreaHeightPCmodifier = 1 + (controlAreaRatio * 0.4)
+		artAreaHeightSplit = (window.barArea.top - window.upperControlArea.top) * (lowerControlAreaHeightPC * upperControlAreaHeightPCmodifier)
 		window.upperControlArea.height = window.barArea.top - window.upperControlArea.top - artAreaHeightSplit
 	else:
 		controlAreaHeightLock = False
@@ -170,8 +170,8 @@ def landscapeZones(window):
 		print('albumArt:',window.albumArtArea.top + window.albumArtArea.height)
 		print('controlAreaRatio:',controlAreaRatio)
 		if overlap:
-			lowerControlAreaHeightPCmodifier = 1 + (controlAreaRatio * 0.2)
-		artAreaHeightSplit = (window.barArea.top - window.upperControlArea.top) * (lowerControlAreaHeightPC * lowerControlAreaHeightPCmodifier)
+			upperControlAreaHeightPCmodifier = 1 + (controlAreaRatio * 0.4)
+		artAreaHeightSplit = (window.barArea.top - window.upperControlArea.top) * (lowerControlAreaHeightPC * upperControlAreaHeightPCmodifier)
 		window.upperControlArea.height = window.controlArea.height - artAreaHeightSplit - window.controlArea.ymod
 
 	# lowerControlArea
@@ -193,42 +193,11 @@ def landscapeZones(window):
 	controlButtonsInnerMargin = int((mainControlButtonSize - lesserControlButtonSize) / 2)
 
 	window.controlButtonsArea.height = mainControlButtonSize
-	controlButtonAreaHeightModifier = 0.55
-	window.controlButtonsArea.top = window.upperControlArea.top + int(window.upperControlArea.height * controlButtonAreaHeightModifier) - int(window.controlButtonsArea.height / 2)
-	if overlap:
-		print('+++ overlap')
-		window.controlButtonsArea.width = window.controlArea.height - (generalMargin * 2)
-		if window.controlButtonsArea.width < (window.controlButtonsArea.height * 3) and (window.controlButtonsArea.height * 3) >= window.albumArtArea.height:
-			# check overall minimum width
-			print('force minimum width')
-			window.controlButtonsArea.width = window.controlButtonsArea.height * 3
-		elif window.controlButtonsArea.width > minimumControlWidth:
-			# check overlap sizing fits
-			print('force overlap width')
-			window.controlButtonsArea.width = window.albumArtArea.height
-		elif window.controlButtonsArea.width > (window.controlButtonsArea.height * 7) and (window.controlButtonsArea.height * 7) <= window.albumArtArea.height:
-			# check overall maximum width
-			print('force maximum width')
-			window.controlButtonsArea.width = window.controlButtonsArea.height * 7
-		else:
-			print('no forced width')
-			window.controlButtonsArea.width = window.albumArtArea.height
-	else:
-		# with no overlap to worry about, controlButtonsArea.width can simply fit within controlArea.width
-		print('+++ no overlap')
-		window.controlButtonsArea.width = window.controlArea.width - (generalMargin * 2)
-		if window.controlButtonsArea.width < (window.controlButtonsArea.height * 3) and (window.controlButtonsArea.height * 3) >= window.controlArea.width:
-			# check overall minimum width
-			print('force minimum width')
-			window.controlButtonsArea.width = window.controlButtonsArea.height * 3
-		elif window.controlButtonsArea.width > (window.controlButtonsArea.height * 7) and (window.controlButtonsArea.height * 7) <= window.controlArea.width:
-			# check overall maximum width
-			print('force maximum width')
-			window.controlButtonsArea.width = window.controlButtonsArea.height * 7
-		else:
-			print('no forced width')
-			window.controlButtonsArea.width = window.controlArea.width - (generalMargin * 2)
-	
+	controlButtonAreaTopPC = 0.55
+	controlButtonAreaTopModifier = 1 - (controlAreaRatio * 0.15)
+	window.controlButtonsArea.top = window.upperControlArea.top + int(window.upperControlArea.height * (controlButtonAreaTopPC * controlButtonAreaTopModifier)) - int(window.controlButtonsArea.height / 2)
+	window.controlButtonsArea.width = window.albumArtArea.width
+
 	window.controlButtonsArea.left = window.controlArea.left + int(window.controlArea.width / 2) - (window.controlButtonsArea.width / 2)
 
 	# define control buttons
@@ -335,6 +304,15 @@ print('window.albumArtArea: ', window.albumArtArea.top, window.albumArtArea.left
 # init mainPanel
 mainPanel = Tk()
 
+playButtonPNG = Image.open("png/play_button.png")
+playButtonImage = ImageTk.PhotoImage(playButtonPNG)
+
+forwardButtonPNG = Image.open("png/forward_button.png")
+forwardButtonImage = forwardButtonPNG
+
+backButtonPNG = Image.open("png/back_button.png")
+backButtonImage = backButtonPNG
+
 mainPanel.title('Auva')
 mainPanel.minsize(480, 480)
 mainPanelGeometry = str(window.width) + 'x' + str(window.height)
@@ -377,13 +355,16 @@ upperControlAreaRectangle = windowCanvas.create_rectangle(window.upperControlAre
 controlButtonsAreaRectangle = windowCanvas.create_rectangle(window.controlButtonsArea.left, window.controlButtonsArea.top, window.controlButtonsArea.left + window.controlButtonsArea.width, window.controlButtonsArea.top + window.controlButtonsArea.height, width=0)
 
 # playButtonArea
-playButtonAreaRectangle = windowCanvas.create_rectangle(window.playButtonArea.left, window.playButtonArea.top, window.playButtonArea.left + window.playButtonArea.width, window.playButtonArea.top + window.playButtonArea.height, width=0, fill="white")
+playButtonAreaRectangle = windowCanvas.create_rectangle(window.playButtonArea.left, window.playButtonArea.top, window.playButtonArea.left + window.playButtonArea.width, window.playButtonArea.top + window.playButtonArea.height, width=0, fill="grey")
+# playButtonLabel = Label(mainPanel, image=playButtonImage, borderwidth=0)
+# playButtonLabel.image = playButtonImage
+# playButtonLabel.place(x=window.playButtonArea.left, y=window.playButtonArea.top)
 
 # nextButtonArea
-nextButtonAreaRectangle = windowCanvas.create_rectangle(window.nextButtonArea.left, window.nextButtonArea.top, window.nextButtonArea.left + window.nextButtonArea.width, window.nextButtonArea.top + window.nextButtonArea.height, width=0, fill="white")
+nextButtonAreaRectangle = windowCanvas.create_rectangle(window.nextButtonArea.left, window.nextButtonArea.top, window.nextButtonArea.left + window.nextButtonArea.width, window.nextButtonArea.top + window.nextButtonArea.height, width=0, fill="grey")
 
 # previousButtonArea
-previousButtonAreaRectangle = windowCanvas.create_rectangle(window.previousButtonArea.left, window.previousButtonArea.top, window.previousButtonArea.left + window.previousButtonArea.width, window.previousButtonArea.top + window.previousButtonArea.height, width=0, fill="white")
+previousButtonAreaRectangle = windowCanvas.create_rectangle(window.previousButtonArea.left, window.previousButtonArea.top, window.previousButtonArea.left + window.previousButtonArea.width, window.previousButtonArea.top + window.previousButtonArea.height, width=0, fill="grey")
 
 # metadataArea rectangle
 # metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height, width=0, fill="orange")
