@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-AreaRules
+layout
 
 @author: cba
 
-clone of AreaRules to test experimental upperControlArea and lowerControlArea layout rules
+Phase 1: write basic sketch to define required areas and rules for movement
+Phase 2: create classes based on sketch areas to properly create architecture for complete layout object <--- WE ARE HERE
+Phase 3: rewrite (simplify/streamline) movement rules taking advantage of proper object architecture (use relationships between containers and elements)
 """
 
 from tkinter import *
@@ -20,6 +22,24 @@ class area:
 	height = 0
 	xmod = 0
 	ymod = 0
+
+class auvaButton:
+	top = 0
+	left = 0
+	width = 0
+	height = 0
+
+	def __init__(self, imageFile):
+		self.image = ImageTk.PhotoImage(imageFile)
+
+class auvaImage:
+	top = 0
+	left = 0
+	width = 0
+	height = 0
+
+	def __init__(self, imageFile):
+		self.image = ImageTk.PhotoImage(imageFile)
 
 class playbackWindow:
 	top = 0
@@ -356,9 +376,6 @@ controlButtonsAreaRectangle = windowCanvas.create_rectangle(window.controlButton
 
 # playButtonArea
 playButtonAreaRectangle = windowCanvas.create_rectangle(window.playButtonArea.left, window.playButtonArea.top, window.playButtonArea.left + window.playButtonArea.width, window.playButtonArea.top + window.playButtonArea.height, width=0, fill="grey")
-# playButtonLabel = Label(mainPanel, image=playButtonImage, borderwidth=0)
-# playButtonLabel.image = playButtonImage
-# playButtonLabel.place(x=window.playButtonArea.left, y=window.playButtonArea.top)
 
 # nextButtonArea
 nextButtonAreaRectangle = windowCanvas.create_rectangle(window.nextButtonArea.left, window.nextButtonArea.top, window.nextButtonArea.left + window.nextButtonArea.width, window.nextButtonArea.top + window.nextButtonArea.height, width=0, fill="grey")
