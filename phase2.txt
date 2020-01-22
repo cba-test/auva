@@ -1,4 +1,4 @@
-areaClass
+Class
  left
  top
  width
@@ -6,26 +6,32 @@ areaClass
  xmod
  ymod
 
-artAreaClass (areaClass)
+topClass (Class)
+ opacityImage
+ art(artClass)
+ control(controlClass)
+
+artClass (Class)
  artworkImage
  artworkMargin
 
-controlButtonsAreaClass (areaClass)
+controlClass (Class)
+ upperControl (upperControlClass)
+ lowerControl (Class)
+ controlButton (Class)
+
+upperControlClass (Class)
+ controlButtons (controlButtonsClass)
+
+controlButtonsClass (Class)
  playButton (buttonClass)
  forwardButton (buttonClass)
  backButton (buttonClass)
 
-upperControlAreaClass (areaClass)
- controlButtonsArea (controlButtonsAreaClass)
+barClass (Class)
+ opacityImage
 
-controlAreaClass (areaClass)
- upperControlArea (upperControlAreaClass)
- lowerControlArea (areaClass)
- controlButtonArea (areaClass)
-
-barAreaClass (areaClass)
-
-playbackWindow
- artArea(artAreaClass)
- controlArea(controlAreaClass)
- barArea(barAreaClass)
+playbackWindow (Class)
+ backgroundImage
+ bar(barClass)
+ top(topClass)
