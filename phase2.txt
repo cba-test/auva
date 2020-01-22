@@ -1,0 +1,20 @@
+areaClass
+ left
+ top
+ width
+ height
+ xmod
+ ymod
+
+artArea (areaClass)
+ artworkImage
+
+controlArea (areaClass)
+ upperControlArea (areaClass)
+ lowerControlArea (areaClass)
+ controlButtonArea (areaClass)
+
+playbackWindow
+ artArea
+ controlArea
+ barArea
