@@ -6,15 +6,26 @@ areaClass
  xmod
  ymod
 
-artArea (areaClass)
+artAreaClass (areaClass)
  artworkImage
+ artworkMargin
 
-controlArea (areaClass)
- upperControlArea (areaClass)
+controlButtonsAreaClass (areaClass)
+ playButton (buttonClass)
+ forwardButton (buttonClass)
+ backButton (buttonClass)
+
+upperControlAreaClass (areaClass)
+ controlButtonsArea (controlButtonsAreaClass)
+
+controlAreaClass (areaClass)
+ upperControlArea (upperControlAreaClass)
  lowerControlArea (areaClass)
  controlButtonArea (areaClass)
 
+barAreaClass (areaClass)
+
 playbackWindow
- artArea
- controlArea
- barArea
+ artArea(artAreaClass)
+ controlArea(controlAreaClass)
+ barArea(barAreaClass)
