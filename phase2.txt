@@ -1,4 +1,4 @@
-Class
+areaClass
  left
  top
  width
@@ -6,32 +6,42 @@ Class
  xmod
  ymod
 
-topClass (Class)
+topClass (areaClass)
  opacityImage
  art(artClass)
  control(controlClass)
 
-artClass (Class)
+artClass (areaClass)
  artworkImage
  artworkMargin
 
-controlClass (Class)
+controlClass (areaClass)
  upperControl (upperControlClass)
- lowerControl (Class)
- controlButton (Class)
+ lowerControl (areaClass)
+ controlButton (areaClass)
 
-upperControlClass (Class)
+upperControlClass (areaClass)
  controlButtons (controlButtonsClass)
 
-controlButtonsClass (Class)
+controlButtonsClass (areaClass)
  playButton (buttonClass)
  forwardButton (buttonClass)
  backButton (buttonClass)
 
-barClass (Class)
+lowerControlClass (areaClass)
+ title(labelClass)
+ album(labelClass)
+ artist(labelClass)
+
+labelClass (areaClass)
+ text
+ font
+ colour
+
+barClass (areaClass)
  opacityImage
 
-playbackWindow (Class)
+playbackWindow (areaClass)
  backgroundImage
  bar(barClass)
  top(topClass)
