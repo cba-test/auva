@@ -1,4 +1,4 @@
-areaClass
+area
  left
  top
  width
@@ -6,42 +6,52 @@ areaClass
  xmod
  ymod
 
-topClass (areaClass)
+buttonClass
+ top
+ left
+ width
+ height
+ image
+
+topClass (area)
  opacityImage
  art(artClass)
  control(controlClass)
 
-artClass (areaClass)
+artClass (area)
  artworkImage
  artworkMargin
 
-controlClass (areaClass)
- upperControl (upperControlClass)
- lowerControl (areaClass)
- controlButton (areaClass)
+controlClass (area)
+ upper (upperControlClass)
+ lower (area)
 
-upperControlClass (areaClass)
- controlButtons (controlButtonsClass)
+upperControlClass (area)
+ buttons (controlButtonsClass)
 
-controlButtonsClass (areaClass)
+controlButtonsClass (area)
  playButton (buttonClass)
  forwardButton (buttonClass)
  backButton (buttonClass)
 
-lowerControlClass (areaClass)
+lowerControlClass (area)
  title(labelClass)
  album(labelClass)
  artist(labelClass)
 
-labelClass (areaClass)
+labelClass (area)
  text
  font
  colour
 
-barClass (areaClass)
+barClass (area)
  opacityImage
 
-playbackWindow (areaClass)
+playbackWindowClass (area)
  backgroundImage
  bar(barClass)
  top(topClass)
+
+# example 
+playbackWindow = playbackWindowClass():
+playbackWindow.top.control.upper.buttons.playButton.top
