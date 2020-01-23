@@ -1,25 +1,25 @@
 area
- left
- top
- width
- height
- xmod
- ymod
+ left = int
+ top = int
+ width = int
+ height = int
+ xmod = float
+ ymod = float
 
 buttonClass
- top
- left
- width
- height
+ top = int
+ left = int
+ width = int
+ height = int
  image
 
 topClass (area)
- opacityImage
  art(artClass)
  control(controlClass)
 
 artClass (area)
  artworkImage
+ artworkImageOpacity
  artworkMargin
 
 controlClass (area)
@@ -49,6 +49,8 @@ barClass (area)
 
 playbackWindowClass (area)
  backgroundImage
+ backgroundImageDarkLevel
+ landscapeMode = boolean
  bar(barClass)
  top(topClass)
 

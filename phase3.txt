@@ -1,0 +1,10 @@
+phase 3
+
+the objective is to take advantage of the modular architecture from phase 2 to rewrite and simplify the various algorithms that govern the way the layout changes to fit the format of the display window
+
+for example, the overlap function between the control area and the art area is currently complicated because it's done "in house" and does not respect the potential consequences unless they are directly associated with the calculations.
+
+by moving all the relevant data into the various classes, it should be possible to make the overlap method a function.
+so rather than checking for the overlap and calculating direct consequences, it becomes something that is called to check how overlap (as a 'thing') should be affecting anything.
+this is because all the data is available at any time, so an overlap function isn't constrained in any way and can basically do all the checks it needs, spitting out all the data required.
+if the data required changes, the function can be changed without breaking anything else.
