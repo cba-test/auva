@@ -8,3 +8,8 @@ by moving all the relevant data into the various classes, it should be possible 
 so rather than checking for the overlap and calculating direct consequences, it becomes something that is called to check how overlap (as a 'thing') should be affecting anything.
 this is because all the data is available at any time, so an overlap function isn't constrained in any way and can basically do all the checks it needs, spitting out all the data required.
 if the data required changes, the function can be changed without breaking anything else.
+
+this document should list all the individual functions required
+overlap - determines the minimum width of art and control before control starts "overlap" art. strictly speaking, art and control are both just invisible containers, so they don't overlap as such.
+However, the overlap affects other elements, so this function should return value(s) that allow anything that will be affected to impliment modifiers independant of the actual overlap process.
+Possibly return two values - overlap in pixels and overlap in percentage
