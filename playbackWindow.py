@@ -25,16 +25,16 @@ class area:
 	xmod = 0
 	ymod = 0
 
-	def top_from_mid():
+	def top_from_mid(self):
 		self.top = self.ymid - int(self.height / 2)
 
-	def left_from_mid():
+	def left_from_mid(self):
 		self.left = self.xmid - int(self.width / 2)
 
-	def mid_from_top():
+	def mid_from_top(self):
 		self.ymid = self.top + int(self.height / 2)
 
-	def mid_from_left():
+	def mid_from_left(self):
 		self.xmid = self.left - int(self.width / 2)
 
 class barArea (area):
@@ -72,6 +72,11 @@ class artArea (area):
 class controlArea (area):
 	split = 0
 	splitRatio = 0.6 # 60% of artArea height
+	buttonsMidRatio = 0.6
+	titleMidRatio = 0.8
+	albumMidRatio = 0.45
+	artistMidRatio = 0.15
+	# all MidRatio values are arbitrary
 
 	playButtonArea = area()
 	nextButtonArea = area()
@@ -81,8 +86,50 @@ class controlArea (area):
 	albumTextArea = area()
 	artistTextArea = area()
 
-	def setSplit(artAreaHeight):
-		self.split = int(artAreaHeight * self.splitRatio)	
+	def __init__(self):
+		self.playButtonArea.height = 100
+		self.playButtonArea.width = 100
+
+		self.nextButtonArea.height = 80
+		self.nextButtonArea.width = 80
+
+		self.previousButtonArea.height = 80
+		self.previousButtonArea.width = 80
+
+		self.titleTextArea.height = 60
+		self.albumTextArea.height = 40
+		self.artistTextArea.height = 40
+
+	def setSplit(self):
+		self.split = int(self.height * self.splitRatio)
+
+	def setButtonsMid(self):
+		self.playButtonArea.ymid = self.top + int((self.split - self.top) * self.buttonsMidRatio)
+		self.nextButtonArea.ymid = self.top + int((self.split - self.top) * self.buttonsMidRatio)
+		self.previousButtonArea.ymid = self.top + int((self.split - self.top) * self.buttonsMidRatio)
+
+		self.playButtonArea.top_from_mid()
+		self.nextButtonArea.top_from_mid()
+		self.previousButtonArea.top_from_mid()
+	
+	def setMetaMids(self):
+		self.titleTextArea.ymid = (self.top + self.height) - int((self.height - self.split) * self.titleMidRatio)
+		self.albumTextArea.ymid = (self.top + self.height) - int((self.height - self.split) * self.albumMidRatio)
+		self.artistTextArea.ymid = (self.top + self.height) - int((self.height - self.split) * self.artistMidRatio)
+
+		self.titleTextArea.top_from_mid()
+		self.albumTextArea.top_from_mid()
+		self.artistTextArea.top_from_mid()
+
+	def setMetaWidth(self, margin):
+		self.titleTextArea.left = self.left + margin
+		self.titleTextArea.width = self.width - (margin * 2)
+
+		self.albumTextArea.left = self.left + margin
+		self.albumTextArea.width = self.width - (margin * 2)
+
+		self.artistTextArea.left = self.left + margin
+		self.artistTextArea.width = self.width - (margin * 2)
 
 class playbackWindow:
 	top = 0
@@ -107,7 +154,7 @@ class playbackWindow:
 		self.barSplit = self.height * self.barSplitRatio
 
 	def setMargin(self):
-		self.margin = int(self.artArea.height * self.marginRatio)
+		self.margin = int(self.controlArea.width * self.marginRatio)
 
 	def setOverlap(self):
 		self.overlapWidth = (self.height - self.barArea.height) * self.overlapRatio
@@ -142,6 +189,7 @@ class playbackWindow:
 			self.artArea.artOpacity = 100
 
 		self.controlArea.height = self.barArea.top - self.controlArea.top
+		self.controlArea.setSplit()
 
 		print('overlapWidth:', self.overlapWidth)
 		print('overlap:', self.overlap)
@@ -170,6 +218,11 @@ def zones (window):
 	window.setOverlap()
 
 	window.artArea.setArtPosition(window)
+
+	window.controlArea.setSplit()
+	window.controlArea.setButtonsMid()
+	window.controlArea.setMetaMids()
+	window.controlArea.setMetaWidth(window.margin)
 
 """
 def landscapeZones(window):
@@ -401,10 +454,13 @@ def resizeMainPanel(event):
 	windowCanvas.coords(previousButtonAreaRectangle, window.previousButtonArea.left, window.previousButtonArea.top, window.previousButtonArea.left + window.previousButtonArea.width, window.previousButtonArea.top + window.previousButtonArea.height)
 
 	windowCanvas.coords(metadataAreaRectangle, window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height)
-	windowCanvas.coords(titleTextAreaRectangle, window.titleTextArea.left, window.titleTextArea.top, window.titleTextArea.left + window.titleTextArea.width, window.titleTextArea.top + window.titleTextArea.height)
-	windowCanvas.coords(albumTextAreaRectangle, window.albumTextArea.left, window.albumTextArea.top, window.albumTextArea.left + window.albumTextArea.width, window.albumTextArea.top + window.albumTextArea.height)
-	windowCanvas.coords(artistTextAreaRectangle, window.artistTextArea.left, window.artistTextArea.top, window.artistTextArea.left + window.artistTextArea.width, window.artistTextArea.top + window.artistTextArea.height)
+	"""
+	
+	windowCanvas.coords(titleTextAreaRectangle, window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height)
+	windowCanvas.coords(albumTextAreaRectangle, window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height)
+	windowCanvas.coords(artistTextAreaRectangle, window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height)
 
+	"""
 	windowCanvas.coords(lowerControlAreaRectangle, window.lowerControlArea.left, window.lowerControlArea.top, window.lowerControlArea.left + window.lowerControlArea.width, window.lowerControlArea.top + window.lowerControlArea.height)
 	windowCanvas.coords(upperControlAreaRectangle, window.upperControlArea.left, window.upperControlArea.top, window.upperControlArea.left + window.upperControlArea.width, window.upperControlArea.top + window.upperControlArea.height)
 	"""
@@ -496,16 +552,16 @@ previousButtonAreaRectangle = windowCanvas.create_rectangle(window.previousButto
 # metadataArea rectangle
 # metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height, width=0, fill="orange")
 metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, window.metadataArea.top, window.metadataArea.left + window.metadataArea.width, window.metadataArea.top + window.metadataArea.height, width=0)
+"""
 
 # titleTextArea rectangle
-titleTextAreaRectangle = windowCanvas.create_rectangle(window.titleTextArea.left, window.titleTextArea.top, window.titleTextArea.left + window.titleTextArea.width, window.titleTextArea.top + window.titleTextArea.height, width=0, fill="white")
+titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="white")
 
 # albumTextArea rectangle
-albumTextAreaRectangle = windowCanvas.create_rectangle(window.albumTextArea.left, window.albumTextArea.top, window.albumTextArea.left + window.albumTextArea.width, window.albumTextArea.top + window.albumTextArea.height, width=0, fill="white")
+albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="white")
 
 # artistTextArea rectangle
-artistTextAreaRectangle = windowCanvas.create_rectangle(window.artistTextArea.left, window.artistTextArea.top, window.artistTextArea.left + window.artistTextArea.width, window.artistTextArea.top + window.artistTextArea.height, width=0, fill="white")
-"""
+artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="white")
 
 mainPanel.bind( "<Configure>", resizeMainPanel)
 
