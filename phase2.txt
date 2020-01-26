@@ -57,3 +57,59 @@ playbackWindowClass (area)
 # example 
 playbackWindow = playbackWindowClass():
 playbackWindow.top.control.upper.buttons.playButton.top
+
+=============
+
+# redesign
+# not happy with the number of levels involved. as positioning of all elements is calculated, I don't need so many sub-areas.
+# also, control elements would be better positioned using centre points and height/width
+
+playbackWindow
+ backgroundImage
+ backgroundImageDarkLevel
+ landscapeMode = boolean
+ bar(barClass)
+ art(artClass)
+ control(controlClass)
+
+barClass (area)
+ darkenBar # a solid black bar with set opacity to darken the background image
+
+area
+ left = int
+ top = int
+ width = int
+ height = int
+ xmod = float
+ ymod = float
+
+artClass (area)
+ artworkImage
+ artworkImageOpacity
+ artworkMargin
+
+controlClass (area)
+ split = float # horizontal divider used for positioning other elements
+ splitRatio = float # having a dynamic split allows for smooth transitioning between landscape and portrait: default (landscape) is 0.6
+ buttons (controlButtonsClass)
+ title(labelClass)
+ album(labelClass)
+ artist(labelClass)
+
+controlButtonsClass (area)
+ playButton (buttonClass)
+ forwardButton (buttonClass)
+ backButton (buttonClass)
+
+labelClass (area)
+ midY
+ midX
+ height
+ width
+ text
+ font
+ colour
+
+---
+
+control.split = control.height * control.splitRatio
