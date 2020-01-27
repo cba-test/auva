@@ -78,7 +78,7 @@ class controlArea (area):
 	albumMidRatio = 0.455
 	artistMidRatio = 0.17
 	textHeightModifier = 1
-	textOverlapModifier = 20 # measured in pixels
+	textOverlapModifier = 10 # measured in pixels
 
 	playButtonArea = area()
 	nextButtonArea = area()
@@ -120,6 +120,8 @@ class controlArea (area):
 		if  albumArtistHeights > albumArtistGap:
 			if albumArtistGap - albumArtistHeights > textOverlap:
 				textOverlap = albumArtistGap - albumArtistHeights
+
+		self.textHeightModifier = self.textHeightModifier + (textOverlap / 300) # okay, so it's a rough calculation, but it works!
 
 	def setSplit(self):
 		self.split = int(self.height * self.splitRatio)
