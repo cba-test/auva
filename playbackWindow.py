@@ -73,10 +73,12 @@ class controlArea (area):
 	split = 0
 	splitRatio = 0.6 # 60% of artArea height
 	buttonsMidRatio = 0.6
-	titleMidRatio = 0.8
-	albumMidRatio = 0.45
-	artistMidRatio = 0.15
 	# all MidRatio values are arbitrary
+	titleMidRatio = 0.8
+	albumMidRatio = 0.455
+	artistMidRatio = 0.17
+	textHeightModifier = 1
+	textOverlapModifier = 20 # measured in pixels
 
 	playButtonArea = area()
 	nextButtonArea = area()
@@ -96,9 +98,28 @@ class controlArea (area):
 		self.previousButtonArea.height = 80
 		self.previousButtonArea.width = 80
 
-		self.titleTextArea.height = 60
-		self.albumTextArea.height = 40
-		self.artistTextArea.height = 40
+		self.setMetaHeight()
+
+	def setMetaHeight(self):
+		self.titleTextArea.height = 60 * self.textHeightModifier
+		self.albumTextArea.height = 40 * self.textHeightModifier
+		self.artistTextArea.height = 40 * self.textHeightModifier
+
+	def checkMetaOverlap(self):
+		textOverlap = 0
+
+		titleAlbumGap = (self.albumTextArea.ymid - self.titleTextArea.ymid)
+		titleAlbumHeights = int(self.titleTextArea.height / 2 + self.albumTextArea.height / 2) + self.textOverlapModifier
+
+		if  titleAlbumHeights > titleAlbumGap:
+			textOverlap = titleAlbumGap - titleAlbumHeights
+
+		albumArtistGap = (self.artistTextArea.ymid - self.albumTextArea.ymid)
+		albumArtistHeights = int(self.albumTextArea.height / 2 + self.artistTextArea.height / 2) + self.textOverlapModifier
+
+		if  albumArtistHeights > albumArtistGap:
+			if albumArtistGap - albumArtistHeights > textOverlap:
+				textOverlap = albumArtistGap - albumArtistHeights
 
 	def setSplit(self):
 		self.split = int(self.height * self.splitRatio)
@@ -162,6 +183,7 @@ class playbackWindow:
 		portraitModeTransitionModifier = 0
 
 		if self.controlArea.width < self.overlapWidth:
+			# OVERLAP - controlArea overlaps artArea
 			self.overlap = True
 			virtualArtArea = self.width - self.overlapWidth
 			if virtualArtArea < 0:
@@ -175,6 +197,8 @@ class playbackWindow:
 
 			if self.controlArea.left < 0:
 				# if controlArea.left < 0 then window is transitioning into portrait mode
+				# artwork needs to move to the top of the artAre
+				# controlButtons and meta text need to subtly change layout
 				portraitModeTransitionModifier = self.controlArea.left
 				self.controlArea.ymod = -portraitModeTransitionModifier * self.transitionAccelerator
 				if self.controlArea.ymod > self.artArea.height:
@@ -184,7 +208,16 @@ class playbackWindow:
 				print('SQUISH!')
 				self.controlArea.left = 0
 				self.controlArea.width = self.width
+
+				# check to see if controlArea has moved beneath art
+				if (self.artArea.art.top + self.artArea.art.height) <= self.controlArea.top:
+					print('-> controlArea LOCK')
+					self.controlArea.top = self.artArea.art.top + self.artArea.art.height
+					self.controlArea.height = self.barArea.top - self.controlArea.top
+
+				self.artArea.artOpacity = int(self.controlArea.top / ((self.artArea.art.top + self.artArea.art.height) / 100))
 		else:
+			# NO OVERLAP - controlArea and artArea are adjoined but seperate
 			self.overlap = False
 			self.artArea.artOpacity = 100
 
@@ -223,6 +256,8 @@ def zones (window):
 	window.controlArea.setButtonsMid()
 	window.controlArea.setMetaMids()
 	window.controlArea.setMetaWidth(window.margin)
+	window.controlArea.checkMetaOverlap()
+	window.controlArea.setMetaHeight()
 
 """
 def landscapeZones(window):
@@ -558,10 +593,10 @@ metadataAreaRectangle = windowCanvas.create_rectangle(window.metadataArea.left, 
 titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="white")
 
 # albumTextArea rectangle
-albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="white")
+albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="grey")
 
 # artistTextArea rectangle
-artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="white")
+artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="black")
 
 mainPanel.bind( "<Configure>", resizeMainPanel)
 
