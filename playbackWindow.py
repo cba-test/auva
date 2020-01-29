@@ -18,6 +18,9 @@ control buttons vertical positioning does not modify to fit transition between p
 meta areas appear to remain squished after vertical size is reduced
 
 text handling - titleText is not moving, font size needs to be calculated to fit controlArea.titleTextArea.height
+
+bar is not high enough (in landscape)
+margin is too narrow
 """
 
 from tkinter import *
@@ -84,7 +87,7 @@ class artArea (area):
 
 class controlArea (area):
 	split = 0
-	splitRatio = 0.6 # 60% of artArea height
+	splitRatio = 0.65 # 60% of artArea height
 	buttonsMidRatio = 0.7
 	# all MidRatio values are arbitrary
 	titleMidRatio = 0.8
@@ -409,11 +412,11 @@ nextButtonAreaRectangle = windowCanvas.create_rectangle(window.controlArea.nextB
 previousButtonAreaRectangle = windowCanvas.create_rectangle(window.controlArea.previousButtonArea.left, window.controlArea.previousButtonArea.top, window.controlArea.previousButtonArea.left + window.controlArea.previousButtonArea.width, window.controlArea.previousButtonArea.top + window.controlArea.previousButtonArea.height, width=0, fill="grey")
 
 # titleTextArea rectangle
-titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="white")
-#titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0)
+#titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="white")
+titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0)
 
-titleFont = font.Font(windowCanvas, family="Tw Cen MT", size=window.controlArea.titleTextArea.height)
-titleText = windowCanvas.create_text(window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top, anchor='e', justify='right', text='Ar3mis & Parzival', font=titleFont, fill='black')
+titleFont = font.Font(windowCanvas, family="Tw Cen MT", size=int(window.controlArea.titleTextArea.height / 2), weight="bold")
+titleText = windowCanvas.create_text(window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top, anchor='ne', justify='right', text='Art3mis & Parzival', font=titleFont, fill='white')
 
 # albumTextArea rectangle
 albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="grey")
