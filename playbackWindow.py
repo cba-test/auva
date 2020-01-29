@@ -21,6 +21,20 @@ text handling - titleText is not moving, font size needs to be calculated to fit
 
 bar is not high enough (in landscape)
 margin is too narrow
+
+SQUISH
+squish happens when controlArea.left <= 0
+this means the layout is transitioning to portrait mode
+this means several things are happened in sequence
+art.top decreases (moves up) until art.top <= window.margin
+the controlArea is moving down rapidly until controlArea.top >= art.top + art.height
+
+two further things need to happen
+art.height decreases until art.top + art.height = predefined split ratio
+barArea.height decreases until it reaches predefined modified ratio
+control area element mids adjust to fit
+
+all of these calculations need to happen in the correct order or they may interact unfavourably
 """
 
 from tkinter import *
@@ -60,9 +74,9 @@ class artArea (area):
 	artImage = None
 	artOpacity = 100
 	margin = 0
+	portraitArtSplitRatio = 0.6
 
 	def setArtPosition(self, window):
-		# margin = window.margin, controlAreaWidth = window.controlArea.width
 		if self.width > self.height:
 			self.margin = window.margin
 			artSize = self.height - (self.margin * 2)
@@ -72,18 +86,31 @@ class artArea (area):
 			self.art.width = artSize
 			self.art.height = artSize
 		else:
-			self.margin = window.margin
-			artSize = window.controlArea.width - (self.margin * 2)
+			if window.transitionSquish:
+				self.margin = window.margin
+				artSize = self.height * self.portraitArtSplitRatio
+				if artSize > window.controlArea.width - (self.margin * 2):
+					artSize = window.controlArea.width - (self.margin * 2)
 
-			self.art.left = self.margin
-			self.art.width = artSize
-			self.art.height = artSize
-			self.mid_from_top()
-			self.art.ymid = self.ymid
-			self.art.top_from_mid()
-			self.art.top = self.art.top - window.controlArea.ymod
-			if self.art.top < self.margin:
+				self.art.xmid = int(window.controlArea.width / 2)
+				self.art.left_from_mid()
+				self.art.width = artSize
+				self.art.height = artSize
 				self.art.top = self.margin
+		
+			else:
+				self.margin = window.margin
+				artSize = window.controlArea.width - (self.margin * 2)
+
+				self.art.left = self.margin
+				self.art.width = artSize
+				self.art.height = artSize
+				self.mid_from_top()
+				self.art.ymid = self.ymid
+				self.art.top_from_mid()
+				self.art.top = self.art.top - window.controlArea.ymod
+				if self.art.top < self.margin:
+					self.art.top = self.margin
 
 class controlArea (area):
 	split = 0
@@ -224,12 +251,15 @@ class playbackWindow:
 	height = 0
 	barSplit = 0
 	barSplitRatio = 0.125 # 10% of window height
-	margin = 30
+	barSplitModifier = 0.64 # as layout transitions into portrait mode, barSplitRatio needs to shrink
+	margin = 20
 	marginRatio = 0.04 # currently set as 4% of the artArea height
 	overlap = False
+	transitionSquish = False
+	controlAreaLock = False
 	overlapWidth = 0
 	overlapRatio = 0.8 # currently set as controlArea.width >= 80% of (window.height - window.barArea.height)
-	transitionAccelerator = 3 # used to ensure controlArea moves into correct portrait positioning
+	transitionAccelerator = 10 # used to ensure controlArea moves into correct portrait positioning
 
 	# declare main areas
 	barArea = barArea()
@@ -237,7 +267,29 @@ class playbackWindow:
 	controlArea = controlArea()
 
 	def setBarSplit(self):
-		self.barSplit = self.height * self.barSplitRatio
+		"""
+		if self.controlAreaLock:
+			# self.barSplit = self.height * (self.barSplitRatio * self.barSplitModifier)
+			self.barSplit = self.height * self.barSplitRatio
+		"""
+
+		if self.transitionSquish:
+			# use artOpacity as a convenient reference as it is effectively a percentage maxing at 100 when full portrait mode is attained
+			artOpacity = self.artArea.artOpacity
+			"""
+			if artOpacity < 1:
+				artOpacity = 1
+			"""
+
+			mod = self.barSplitModifier + ((1 - self.barSplitModifier) * (artOpacity / 100))
+
+			print('barSplit transition:',self.height,self.barSplitRatio,self.barSplitModifier,self.artArea.artOpacity,artOpacity)
+
+			self.barSplit = self.height * (self.barSplitRatio * mod)
+
+			print ('barSplit:',self.barSplit)
+		else:
+			self.barSplit = self.height * self.barSplitRatio
 
 	def setOverlap(self):
 		self.overlapWidth = (self.height - self.barArea.height) * self.overlapRatio
@@ -259,25 +311,31 @@ class playbackWindow:
 
 			if self.controlArea.left < 0:
 				# if controlArea.left < 0 then window is transitioning into portrait mode
-				# artwork needs to move to the top of the artAre
+				# artwork needs to move to the top of the artArea
 				# controlButtons and meta text need to subtly change layout
+				print('SQUISH!')
+				self.transitionSquish = True
 				portraitModeTransitionModifier = self.controlArea.left
 				self.controlArea.ymod = -portraitModeTransitionModifier * self.transitionAccelerator
 				if self.controlArea.ymod > self.artArea.height:
 					self.controlArea.ymod = self.artArea.height
 				self.controlArea.top = self.controlArea.ymod
 
-				print('SQUISH!')
 				self.controlArea.left = 0
 				self.controlArea.width = self.width
 
 				# check to see if controlArea has moved beneath art
 				if (self.artArea.art.top + self.artArea.art.height) <= self.controlArea.top:
+					self.controlAreaLock = True
 					print('-> controlArea LOCK')
 					self.controlArea.top = self.artArea.art.top + self.artArea.art.height
 					self.controlArea.height = self.barArea.top - self.controlArea.top
+				else:
+					self.controlAreaLock = False
 
 				self.artArea.artOpacity = int(self.controlArea.top / ((self.artArea.art.top + self.artArea.art.height) / 100))
+			else:
+				self.transitionSquish = False
 		else:
 			# NO OVERLAP - controlArea and artArea are adjoined but seperate
 			self.overlap = False
@@ -329,12 +387,10 @@ def resizeMainPanel(event):
 	windowCanvas.coords(backgroundRectangle,window.left, window.top, window.width, window.height)
 
 	windowCanvas.coords(barAreaRectangle, window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height)
-
 	windowCanvas.coords(artAreaRectangle, window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height)
-	
-	windowCanvas.coords(albumArtAreaRectangle, window.artArea.art.left, window.artArea.art.top, window.artArea.art.left + window.artArea.art.width, window.artArea.art.top + window.artArea.art.height)
-
 	windowCanvas.coords(controlAreaRectangle, window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height)
+
+	windowCanvas.coords(albumArtAreaRectangle, window.artArea.art.left, window.artArea.art.top, window.artArea.art.left + window.artArea.art.width, window.artArea.art.top + window.artArea.art.height)
 
 	windowCanvas.coords(playButtonAreaRectangle, window.controlArea.playButtonArea.left, window.controlArea.playButtonArea.top, window.controlArea.playButtonArea.left + window.controlArea.playButtonArea.width, window.controlArea.playButtonArea.top + window.controlArea.playButtonArea.height)
 	windowCanvas.coords(nextButtonAreaRectangle, window.controlArea.nextButtonArea.left, window.controlArea.nextButtonArea.top, window.controlArea.nextButtonArea.left + window.controlArea.nextButtonArea.width, window.controlArea.nextButtonArea.top + window.controlArea.nextButtonArea.height)
@@ -343,6 +399,10 @@ def resizeMainPanel(event):
 	windowCanvas.coords(titleTextAreaRectangle, window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height)
 	windowCanvas.coords(albumTextAreaRectangle, window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height)
 	windowCanvas.coords(artistTextAreaRectangle, window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height)
+
+	windowCanvas.coords(titleText, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top)
+	windowCanvas.coords(albumText, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top)
+	windowCanvas.coords(artistText, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top)
 
 	windowCanvas.update
 
