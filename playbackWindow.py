@@ -249,6 +249,7 @@ class playbackWindow:
 	left = 0
 	width = 0
 	height = 0
+	ratio = 0
 	barSplit = 0
 	barSplitRatio = 0.125 # 10% of window height
 	barSplitModifier = 0.64 # as layout transitions into portrait mode, barSplitRatio needs to shrink
@@ -266,30 +267,17 @@ class playbackWindow:
 	artArea = artArea()
 	controlArea = controlArea()
 
+	def getWindowRatio(self):
+		self.ratio = self.width / self.height
+
 	def setBarSplit(self):
-		"""
-		if self.controlAreaLock:
-			# self.barSplit = self.height * (self.barSplitRatio * self.barSplitModifier)
-			self.barSplit = self.height * self.barSplitRatio
-		"""
+		cappedRatio = self.ratio
+		if cappedRatio > 1:
+			cappedRatio = 1
+		elif cappedRatio < self.barSplitModifier:
+			cappedRatio =self. barSplitModifier
 
-		if self.transitionSquish:
-			# use artOpacity as a convenient reference as it is effectively a percentage maxing at 100 when full portrait mode is attained
-			artOpacity = self.artArea.artOpacity
-			"""
-			if artOpacity < 1:
-				artOpacity = 1
-			"""
-
-			mod = self.barSplitModifier + ((1 - self.barSplitModifier) * (artOpacity / 100))
-
-			print('barSplit transition:',self.height,self.barSplitRatio,self.barSplitModifier,self.artArea.artOpacity,artOpacity)
-
-			self.barSplit = self.height * (self.barSplitRatio * mod)
-
-			print ('barSplit:',self.barSplit)
-		else:
-			self.barSplit = self.height * self.barSplitRatio
+		self.barSplit = self.height * (self.barSplitRatio * cappedRatio)
 
 	def setOverlap(self):
 		self.overlapWidth = (self.height - self.barArea.height) * self.overlapRatio
@@ -346,6 +334,7 @@ class playbackWindow:
 
 def zones (window):
 	# define main areas
+	window.getWindowRatio()
 	window.setBarSplit()
 	window.barArea.left = 0
 	window.barArea.width = window.width
