@@ -88,16 +88,18 @@ class artArea (area):
 class controlArea (area):
 	split = 0
 	splitRatio = 0.65 # 60% of artArea height
-	buttonsMidRatio = 0.7
+	buttonsMidRatio = 0.68
+	buttonsAreaWidthMin = 440
+	buttonsAreaWidthMax = 500
 	# all MidRatio values are arbitrary
-	titleMidRatio = 0.8
-	albumMidRatio = 0.455
-	artistMidRatio = 0.17
+	titleMidRatio = 0.82
+	albumMidRatio = 0.52
+	artistMidRatio = 0.27
 	textHeightModifier = 1
 	textOverlapModifier = 10 # measured in pixels
 
-	largeButtonSize = 100
-	smallButtonSize = 80
+	largeButtonSize = 80
+	smallButtonSize = 60
 	
 	playButtonArea = area()
 	nextButtonArea = area()
@@ -120,9 +122,9 @@ class controlArea (area):
 		self.setMetaHeight()
 
 	def setMetaHeight(self):
-		self.titleTextArea.height = int(60 * self.textHeightModifier)
-		self.albumTextArea.height = int(40 * self.textHeightModifier)
-		self.artistTextArea.height = int(40 * self.textHeightModifier)
+		self.titleTextArea.height = int(45 * self.textHeightModifier)
+		self.albumTextArea.height = int(30 * self.textHeightModifier)
+		self.artistTextArea.height = int(30 * self.textHeightModifier)
 
 	def checkMetaOverlap(self):
 		textOverlap = 0
@@ -163,11 +165,11 @@ class controlArea (area):
 			buttonsAreaWidth = self.width - (window.margin * 2)
 
 		# check minimum/maximum width
-		if buttonsAreaWidth < 440:
-			buttonsAreaWidth = 440
+		if buttonsAreaWidth < self.buttonsAreaWidthMin:
+			buttonsAreaWidth = self.buttonsAreaWidthMin
 
-		if buttonsAreaWidth > 700:
-			buttonsAreaWidth = 700
+		if buttonsAreaWidth > self.buttonsAreaWidthMax:
+			buttonsAreaWidth = self.buttonsAreaWidthMax
 
 		buttonsAreaMid = self.top + (self.split * self.buttonsMidRatio)
 		buttonsAreaLeft = self.left + int(self.width / 2) - (buttonsAreaWidth / 2)
@@ -221,8 +223,8 @@ class playbackWindow:
 	width = 0
 	height = 0
 	barSplit = 0
-	barSplitRatio = 0.1 # 10% of window height
-	margin = 10
+	barSplitRatio = 0.125 # 10% of window height
+	margin = 30
 	marginRatio = 0.04 # currently set as 4% of the artArea height
 	overlap = False
 	overlapWidth = 0
@@ -412,17 +414,25 @@ nextButtonAreaRectangle = windowCanvas.create_rectangle(window.controlArea.nextB
 previousButtonAreaRectangle = windowCanvas.create_rectangle(window.controlArea.previousButtonArea.left, window.controlArea.previousButtonArea.top, window.controlArea.previousButtonArea.left + window.controlArea.previousButtonArea.width, window.controlArea.previousButtonArea.top + window.controlArea.previousButtonArea.height, width=0, fill="grey")
 
 # titleTextArea rectangle
-#titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="white")
-titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0)
+titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="grey")
+# titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0)
 
-titleFont = font.Font(windowCanvas, family="Tw Cen MT", size=int(window.controlArea.titleTextArea.height / 2), weight="bold")
+titleFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.titleTextArea.height, weight="normal")
 titleText = windowCanvas.create_text(window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top, anchor='ne', justify='right', text='Art3mis & Parzival', font=titleFont, fill='white')
 
 # albumTextArea rectangle
 albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="grey")
+# albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0)
+
+albumFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.albumTextArea.height, weight="normal")
+albumText = windowCanvas.create_text(window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top, anchor='ne', justify='right', text='Dark All Day', font=albumFont, fill='white')
 
 # artistTextArea rectangle
-artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="black")
+artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="grey")
+# artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="black")
+
+artistFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.artistTextArea.height, weight="normal")
+artistText = windowCanvas.create_text(window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top, anchor='ne', justify='right', text='Gunship', font=artistFont, fill='white')
 
 mainPanel.bind( "<Configure>", resizeMainPanel)
 
