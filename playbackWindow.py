@@ -411,7 +411,9 @@ def resizeMainPanel(event):
 	# windowCanvas.coords(nextButtonAreaRectangle, window.controlArea.nextButtonArea.left, window.controlArea.nextButtonArea.top, window.controlArea.nextButtonArea.left + window.controlArea.nextButtonArea.width, window.controlArea.nextButtonArea.top + window.controlArea.nextButtonArea.height)
 	# windowCanvas.coords(previousButtonAreaRectangle, window.controlArea.previousButtonArea.left, window.controlArea.previousButtonArea.top, window.controlArea.previousButtonArea.left + window.controlArea.previousButtonArea.width, window.controlArea.previousButtonArea.top + window.controlArea.previousButtonArea.height)
 	
-	window.albumArtSized = Image.open("art/gunship.jpg").resize((int(window.artArea.art.width), int(window.artArea.art.height)), Image.ANTIALIAS)
+	window.albumArtSized = Image.open("art/gunship.jpg")
+	window.albumArtSized = window.albumArtSized.resize((int(window.artArea.art.width), int(window.artArea.art.height)), Image.ANTIALIAS)
+	window.albumArtSized.putalpha(128)
 	window.albumArtImage = ImageTk.PhotoImage(window.albumArtSized)
 	windowCanvas.coords(artImage, window.artArea.art.left, window.artArea.art.top)
 	windowCanvas.itemconfig(artImage, image=window.albumArtImage)
