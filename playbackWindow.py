@@ -413,7 +413,7 @@ def resizeMainPanel(event):
 	
 	window.albumArtSized = Image.open("art/gunship.jpg")
 	window.albumArtSized = window.albumArtSized.resize((int(window.artArea.art.width), int(window.artArea.art.height)), Image.ANTIALIAS)
-	window.albumArtSized.putalpha(128)
+	window.albumArtSized.putalpha(int(window.artArea.artOpacity * 2.55))
 	window.albumArtImage = ImageTk.PhotoImage(window.albumArtSized)
 	windowCanvas.coords(artImage, window.artArea.art.left, window.artArea.art.top)
 	windowCanvas.itemconfig(artImage, image=window.albumArtImage)
