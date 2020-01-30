@@ -266,6 +266,20 @@ class playbackWindow:
 	artArea = artArea()
 	controlArea = controlArea()
 
+	# declare images
+	playButtonPNG = ''
+	playButtonImage = ''
+
+	forwardButtonPNG = ''
+	forwardButtonImage = ''
+
+	backButtonPNG = ''
+	backButtonImage = ''
+
+	albumArtJPG = ''
+	albumArtSized = ''
+	albumArtImage = ''
+
 	def getWindowRatio(self):
 		self.ratio = self.width / self.height
 
@@ -331,6 +345,19 @@ class playbackWindow:
 		self.controlArea.height = self.barArea.top - self.controlArea.top
 		self.controlArea.setSplit()
 
+	def init_images(self):
+		self.playButtonPNG = Image.open("art/play_button.png")
+		self.playButtonImage = ImageTk.PhotoImage(self.playButtonPNG)
+
+		self.forwardButtonPNG = Image.open("art/forward_button.png")
+		self.forwardButtonImage = ImageTk.PhotoImage(self.forwardButtonPNG)
+
+		self.backButtonPNG = Image.open("art/back_button.png")
+		self.backButtonImage = ImageTk.PhotoImage(self.backButtonPNG)
+
+		self.albumArtSized = Image.open("art/gunship.jpg").resize((window.artArea.art.width, window.artArea.art.height), Image.ANTIALIAS)
+		self.albumArtImage = ImageTk.PhotoImage(self.albumArtSized)
+
 def zones (window):
 	# define main areas
 	window.getWindowRatio()
@@ -378,12 +405,17 @@ def resizeMainPanel(event):
 	windowCanvas.coords(artAreaRectangle, window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height)
 	windowCanvas.coords(controlAreaRectangle, window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height)
 
-	windowCanvas.coords(albumArtAreaRectangle, window.artArea.art.left, window.artArea.art.top, window.artArea.art.left + window.artArea.art.width, window.artArea.art.top + window.artArea.art.height)
+	# windowCanvas.coords(albumArtAreaRectangle, window.artArea.art.left, window.artArea.art.top, window.artArea.art.left + window.artArea.art.width, window.artArea.art.top + window.artArea.art.height)
 
 	# windowCanvas.coords(playButtonAreaRectangle, window.controlArea.playButtonArea.left, window.controlArea.playButtonArea.top, window.controlArea.playButtonArea.left + window.controlArea.playButtonArea.width, window.controlArea.playButtonArea.top + window.controlArea.playButtonArea.height)
 	# windowCanvas.coords(nextButtonAreaRectangle, window.controlArea.nextButtonArea.left, window.controlArea.nextButtonArea.top, window.controlArea.nextButtonArea.left + window.controlArea.nextButtonArea.width, window.controlArea.nextButtonArea.top + window.controlArea.nextButtonArea.height)
 	# windowCanvas.coords(previousButtonAreaRectangle, window.controlArea.previousButtonArea.left, window.controlArea.previousButtonArea.top, window.controlArea.previousButtonArea.left + window.controlArea.previousButtonArea.width, window.controlArea.previousButtonArea.top + window.controlArea.previousButtonArea.height)
 	
+	window.albumArtSized = Image.open("art/gunship.jpg").resize((int(window.artArea.art.width), int(window.artArea.art.height)), Image.ANTIALIAS)
+	window.albumArtImage = ImageTk.PhotoImage(window.albumArtSized)
+	windowCanvas.coords(artImage, window.artArea.art.left, window.artArea.art.top)
+	windowCanvas.itemconfig(artImage, image=window.albumArtImage)
+
 	windowCanvas.coords(titleTextAreaRectangle, window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height)
 	windowCanvas.coords(albumTextAreaRectangle, window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height)
 	windowCanvas.coords(artistTextAreaRectangle, window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height)
@@ -418,24 +450,14 @@ print('window.controlArea.titleTextArea: ', window.controlArea.titleTextArea.top
 # init mainPanel
 mainPanel = Tk()
 
-playButtonPNG = Image.open("art/play_button.png")
-playButtonImage = ImageTk.PhotoImage(playButtonPNG)
-
-forwardButtonPNG = Image.open("art/forward_button.png")
-forwardButtonImage = ImageTk.PhotoImage(forwardButtonPNG)
-
-backButtonPNG = Image.open("art/back_button.png")
-backButtonImage = ImageTk.PhotoImage(backButtonPNG)
-
-albumArtJPG = Image.open("art/gunship.jpg")
-albumArtImage = ImageTk.PhotoImage(albumArtJPG)
-
 mainPanel.title('Auva')
 mainPanel.minsize(480, 480)
 mainPanelGeometry = str(window.width) + 'x' + str(window.height)
 mainPanel.geometry(mainPanelGeometry)
 # mainPanel.resizable(False, False)
 # mainPanel.attributes("-topmost", True)
+
+window.init_images()
 
 windowCanvas = Canvas(mainPanel, width = window.width, height = window.height, bd=0, highlightthickness=0)
 windowCanvas.pack()
@@ -456,23 +478,23 @@ controlAreaRectangle = windowCanvas.create_rectangle(window.controlArea.left, wi
 # controlAreaRectangle = windowCanvas.create_rectangle(window.controlArea.left, window.controlArea.top, window.controlArea.left + window.controlArea.width, window.controlArea.top + window.controlArea.height, width=0, fill="#222222")
 
 # albumArtArea rectangle
-albumArtAreaRectangle = windowCanvas.create_rectangle(window.artArea.art.left, window.artArea.art.top, window.artArea.art.left + window.artArea.art.width, window.artArea.art.top + window.artArea.art.height, width=0, fill="yellow")
+# albumArtAreaRectangle = windowCanvas.create_rectangle(window.artArea.art.left, window.artArea.art.top, window.artArea.art.left + window.artArea.art.width, window.artArea.art.top + window.artArea.art.height, width=0, fill="yellow")
 # albumArtAreaRectangle = windowCanvas.create_rectangle(window.artArea.art.left, window.artArea.art.top, window.artArea.art.left + window.artArea.art.width, window.artArea.art.top + window.artArea.art.height, width=0)
 # create new image using albumArtImage but resized to correctly fit artArea.art
 # this requires a comparison between the height & width of both the albumArtImage and artArea
-# windowCanvas.create_image(window.artArea.art.left, window.artArea.art.top, image = albumArtImage, anchor = 'nw')
+artImage = windowCanvas.create_image(window.artArea.art.left, window.artArea.art.top, image = window.albumArtImage, anchor = 'nw')
 
 # playButtonArea
 # playButtonAreaRectangle = windowCanvas.create_rectangle(window.controlArea.playButtonArea.left, window.controlArea.playButtonArea.top, window.controlArea.playButtonArea.left + window.controlArea.playButtonArea.width, window.controlArea.playButtonArea.top + window.controlArea.playButtonArea.height, width=0, fill="grey")
-playButtonAreaImage = windowCanvas.create_image(window.controlArea.playButtonArea.left + int(window.controlArea.playButtonArea.width / 2), window.controlArea.playButtonArea.top + int(window.controlArea.playButtonArea.height / 2), image = playButtonImage, anchor = 'center')
+playButtonAreaImage = windowCanvas.create_image(window.controlArea.playButtonArea.left + int(window.controlArea.playButtonArea.width / 2), window.controlArea.playButtonArea.top + int(window.controlArea.playButtonArea.height / 2), image = window.playButtonImage, anchor = 'center')
 
 # nextButtonArea
 # nextButtonAreaRectangle = windowCanvas.create_rectangle(window.controlArea.nextButtonArea.left, window.controlArea.nextButtonArea.top, window.controlArea.nextButtonArea.left + window.controlArea.nextButtonArea.width, window.controlArea.nextButtonArea.top + window.controlArea.nextButtonArea.height, width=0, fill="grey")
-nextButtonAreaImage = windowCanvas.create_image(window.controlArea.nextButtonArea.left + int(window.controlArea.nextButtonArea.width / 2), window.controlArea.nextButtonArea.top + int(window.controlArea.nextButtonArea.height / 2), image = forwardButtonImage, anchor = 'center')
+nextButtonAreaImage = windowCanvas.create_image(window.controlArea.nextButtonArea.left + int(window.controlArea.nextButtonArea.width / 2), window.controlArea.nextButtonArea.top + int(window.controlArea.nextButtonArea.height / 2), image = window.forwardButtonImage, anchor = 'center')
 
 # previousButtonArea
 # previousButtonAreaRectangle = windowCanvas.create_rectangle(window.controlArea.previousButtonArea.left, window.controlArea.previousButtonArea.top, window.controlArea.previousButtonArea.left + window.controlArea.previousButtonArea.width, window.controlArea.previousButtonArea.top + window.controlArea.previousButtonArea.height, width=0, fill="grey")
-previousButtonAreaImage = windowCanvas.create_image(window.controlArea.previousButtonArea.left + int(window.controlArea.previousButtonArea.width / 2), window.controlArea.previousButtonArea.top + int(window.controlArea.previousButtonArea.height / 2), image = backButtonImage, anchor = 'center')
+previousButtonAreaImage = windowCanvas.create_image(window.controlArea.previousButtonArea.left + int(window.controlArea.previousButtonArea.width / 2), window.controlArea.previousButtonArea.top + int(window.controlArea.previousButtonArea.height / 2), image = window.backButtonImage, anchor = 'center')
 
 # titleTextArea rectangle
 titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="grey")
