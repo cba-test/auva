@@ -13,14 +13,11 @@ the aim of playbackWindow is to write proper class structure, simplify the data 
 CURRENT ISSUES
 margin algorithm is not stable enough - set fixed at 10
 
-bar does not resize to better fit very tall, narrow layouts
-control buttons vertical positioning does not modify to fit transition between portrait and landscape
-meta areas appear to remain squished after vertical size is reduced
+bar does not resize to better fit very tall, narrow layouts - fixed using ratio of window.width and window.height (window.ratio)
+--> control buttons vertical positioning does not modify to fit transition between portrait and landscape
+--> meta areas appear to remain squished after vertical size is reduced
 
-text handling - titleText is not moving, font size needs to be calculated to fit controlArea.titleTextArea.height
-
-bar is not high enough (in landscape)
-margin is too narrow
+text handling - titleText is not moving, font size needs to be calculated to fit controlArea.titleTextArea.height - fixed
 
 SQUISH
 squish happens when controlArea.left <= 0
@@ -32,9 +29,11 @@ the controlArea is moving down rapidly until controlArea.top >= art.top + art.he
 two further things need to happen
 art.height decreases until art.top + art.height = predefined split ratio
 barArea.height decreases until it reaches predefined modified ratio
-control area element mids adjust to fit
+--> control area element mids/heights adjust to fit
 
 all of these calculations need to happen in the correct order or they may interact unfavourably
+
+--> put albumArtImage in correct place and ensure it fits
 """
 
 from tkinter import *
@@ -415,14 +414,17 @@ print('window.controlArea.titleTextArea: ', window.controlArea.titleTextArea.top
 # init mainPanel
 mainPanel = Tk()
 
-playButtonPNG = Image.open("png/play_button.png")
+playButtonPNG = Image.open("art/play_button.png")
 playButtonImage = ImageTk.PhotoImage(playButtonPNG)
 
-forwardButtonPNG = Image.open("png/forward_button.png")
+forwardButtonPNG = Image.open("art/forward_button.png")
 forwardButtonImage = forwardButtonPNG
 
-backButtonPNG = Image.open("png/back_button.png")
+backButtonPNG = Image.open("art/back_button.png")
 backButtonImage = backButtonPNG
+
+albumArtJPG = Image.open("art/gunship.jpg")
+albumArtImage = albumArtJPG
 
 mainPanel.title('Auva')
 mainPanel.minsize(480, 480)
