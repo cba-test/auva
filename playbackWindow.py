@@ -34,6 +34,11 @@ barArea.height decreases until it reaches predefined modified ratio
 all of these calculations need to happen in the correct order or they may interact unfavourably
 
 --> put albumArtImage in correct place and ensure it fits
+
+background image considerations
+actual size should be slightly larger than window size to prevent blur 'blank border' effect. once blurred, image can be cropped to fit
+aspect ratio should be kept to original artwork and final (blurred/cropped) image centred on page
+need to use fastest blur -blur 'accuracy' is secondary
 """
 
 from tkinter import *
@@ -280,6 +285,9 @@ class playbackWindow:
 	albumArtSized = ''
 	albumArtImage = ''
 
+	barAreaJPG = ''
+	barAreaImage = ''
+
 	def getWindowRatio(self):
 		self.ratio = self.width / self.height
 
@@ -358,6 +366,9 @@ class playbackWindow:
 		self.albumArtSized = Image.open("art/gunship.jpg").resize((window.artArea.art.width, window.artArea.art.height), Image.ANTIALIAS)
 		self.albumArtImage = ImageTk.PhotoImage(self.albumArtSized)
 
+		self.barAreaJPG = Image.open("art/bar.jpg").resize((window.barArea.width, window.barArea.height), Image.ANTIALIAS)
+		self.barAreaImage = ImageTk.PhotoImage(self.barAreaJPG)
+
 def zones (window):
 	# define main areas
 	window.getWindowRatio()
@@ -411,6 +422,12 @@ def resizeMainPanel(event):
 	# windowCanvas.coords(nextButtonAreaRectangle, window.controlArea.nextButtonArea.left, window.controlArea.nextButtonArea.top, window.controlArea.nextButtonArea.left + window.controlArea.nextButtonArea.width, window.controlArea.nextButtonArea.top + window.controlArea.nextButtonArea.height)
 	# windowCanvas.coords(previousButtonAreaRectangle, window.controlArea.previousButtonArea.left, window.controlArea.previousButtonArea.top, window.controlArea.previousButtonArea.left + window.controlArea.previousButtonArea.width, window.controlArea.previousButtonArea.top + window.controlArea.previousButtonArea.height)
 	
+	window.barAreaJPG = Image.open("art/bar.jpg").resize((window.barArea.width, window.barArea.height), Image.ANTIALIAS)
+	window.barAreaJPG.putalpha(153) # roughly 60%
+	window.barAreaImage = ImageTk.PhotoImage(window.barAreaJPG)
+	windowCanvas.coords(barImage, window.barArea.left, window.barArea.top)
+	windowCanvas.itemconfig(barImage, image=window.barAreaImage)
+
 	window.albumArtSized = Image.open("art/gunship.jpg")
 	window.albumArtSized = window.albumArtSized.resize((int(window.artArea.art.width), int(window.artArea.art.height)), Image.ANTIALIAS)
 	window.albumArtSized.putalpha(int(window.artArea.artOpacity * 2.55))
@@ -470,6 +487,7 @@ backgroundRectangle = windowCanvas.create_rectangle(window.left, window.top, win
 # barArea rectangle
 barAreaRectangle = windowCanvas.create_rectangle(window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height, width=0, fill="blue")
 # barAreaRectangle = windowCanvas.create_rectangle(window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height, width=0, fill="#111111")
+barImage = windowCanvas.create_image(window.barArea.left, window.barArea.top, image = window.barAreaImage, anchor = 'nw')
 
 # artArea rectangle
 artAreaRectangle = windowCanvas.create_rectangle(window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height, width=0, fill="red")
