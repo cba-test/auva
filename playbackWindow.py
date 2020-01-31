@@ -118,8 +118,11 @@ class artArea (area):
 
 class controlArea (area):
 	split = 0
-	splitRatio = 0.65 # 60% of artArea height
-	buttonsMidRatio = 0.68
+	splitRatio = 0.65 # 60% of artArea height (this needs to reduce for portrait mode)
+	splitRatioModifier = 1
+	splitRatioModifierMax = 0.4
+
+	buttonsMidRatio = 0.68 
 	buttonsAreaWidthMin = 440
 	buttonsAreaWidthMax = 500
 	# all MidRatio values are arbitrary
@@ -176,7 +179,7 @@ class controlArea (area):
 		self.textHeightModifier = self.textHeightModifier + (textOverlap / 300) # okay, so it's a rough calculation, but it works!
 
 	def setSplit(self):
-		self.split = int(self.height * self.splitRatio)
+		self.split = int(self.height * (self.splitRatio * splitRatioModifier))
 
 	def setButtonsMid(self):
 		self.playButtonArea.ymid = self.top + int((self.split - self.top) * self.buttonsMidRatio)
@@ -335,6 +338,8 @@ class playbackWindow:
 
 				self.controlArea.left = 0
 				self.controlArea.width = self.width
+
+				# modify self.controlArea.splitRatioModifier so it reduces based on opacity - when opacity = 100, splitRatioModifier = splitRatioModifierMax
 
 				# check to see if controlArea has moved beneath art
 				if (self.artArea.art.top + self.artArea.art.height) <= self.controlArea.top:
