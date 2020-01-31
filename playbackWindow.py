@@ -418,9 +418,30 @@ def resizeMainPanel(event):
 
 	# windowCanvas.coords(backgroundRectangle,window.left, window.top, window.width, window.height)
 
-	window.backgroundAreaJPG = Image.open("art/gunship.jpg").resize((window.width, window.height), Image.ANTIALIAS) # resize needs to retain aspect ratio
+	window.backgroundAreaJPG = Image.open("art/gunship.jpg")
+	backgroundWidth, backgroundHeight = window.backgroundAreaJPG.size
+
+	if (window.width / backgroundWidth) < (window.height / backgroundHeight):
+		backgroundRatio = window.height / backgroundHeight
+	else:
+		backgroundRatio = window.width / backgroundWidth
+
+	finalBackgroundWidth = int(backgroundWidth * backgroundRatio)
+	finalBackgroundHeight = int(backgroundHeight * backgroundRatio)
+
+	if finalBackgroundWidth > window.width:
+		window.backgroundAreaJPG = window.backgroundAreaJPG.crop((int((finalBackgroundWidth - window.width) / 2), 0, window.width, finalBackgroundHeight))
+		print('crop width',int((finalBackgroundWidth - window.width) / 2))
+
+	if finalBackgroundHeight > window.height:
+		window.backgroundAreaJPG = window.backgroundAreaJPG.crop((0, int((finalBackgroundHeight - window.height) / 2), finalBackgroundWidth, window.height))
+		print('crop height',int((finalBackgroundHeight - window.height) / 2))
+
+	print('backgroundAreaCrop:',window.backgroundAreaJPG.size)
+
+	window.backgroundAreaJPG = window.backgroundAreaJPG.resize((window.width, window.height), Image.ANTIALIAS)
 	blurredBackgroundAreaImage = window.backgroundAreaJPG.filter(ImageFilter.GaussianBlur(3))
-	blurredDarkenedBackgroundAreaImage = ImageEnhance.Brightness(blurredBackgroundAreaImage).enhance(0.3)
+	blurredDarkenedBackgroundAreaImage = ImageEnhance.Brightness(blurredBackgroundAreaImage).enhance(0.4)
 	window.backgroundAreaImage = ImageTk.PhotoImage(blurredDarkenedBackgroundAreaImage)
 	windowCanvas.coords(backgroundImage, window.left, window.top)
 	windowCanvas.itemconfig(backgroundImage, image=window.backgroundAreaImage)
