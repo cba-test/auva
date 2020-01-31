@@ -428,19 +428,30 @@ def resizeMainPanel(event):
 
 	finalBackgroundWidth = int(backgroundWidth * backgroundRatio)
 	finalBackgroundHeight = int(backgroundHeight * backgroundRatio)
+	print('---')
+	print('finalBackground width, height',finalBackgroundWidth,finalBackgroundHeight)
+	print('window width, height',window.width,window.height)
+	print('backgroundAreaCrop (pre):',window.backgroundAreaJPG.size)
+
+	window.backgroundAreaJPG = window.backgroundAreaJPG.resize((finalBackgroundWidth, finalBackgroundHeight), Image.ANTIALIAS)
+
+	print('backgroundAreaCrop (resize):',window.backgroundAreaJPG.size)
 
 	if finalBackgroundWidth > window.width:
-		window.backgroundAreaJPG = window.backgroundAreaJPG.crop((int((finalBackgroundWidth - window.width) / 2), 0, window.width, finalBackgroundHeight))
+		modLeft = int((finalBackgroundWidth - window.width) / 2)
+		modRight = finalBackgroundHeight - modLeft
+		window.backgroundAreaJPG = window.backgroundAreaJPG.crop((modLeft, 0, modRight, finalBackgroundHeight))
 		print('crop width',int((finalBackgroundWidth - window.width) / 2))
 
 	if finalBackgroundHeight > window.height:
-		window.backgroundAreaJPG = window.backgroundAreaJPG.crop((0, int((finalBackgroundHeight - window.height) / 2), finalBackgroundWidth, window.height))
+		modTop = int((finalBackgroundHeight - window.height) / 2)
+		modBottom = finalBackgroundHeight - modTop
+		window.backgroundAreaJPG = window.backgroundAreaJPG.crop((0, modTop, finalBackgroundWidth, modBottom))
 		print('crop height',int((finalBackgroundHeight - window.height) / 2))
 
-	print('backgroundAreaCrop:',window.backgroundAreaJPG.size)
+	print('backgroundAreaCrop (post):',window.backgroundAreaJPG.size)
 
-	window.backgroundAreaJPG = window.backgroundAreaJPG.resize((window.width, window.height), Image.ANTIALIAS)
-	blurredBackgroundAreaImage = window.backgroundAreaJPG.filter(ImageFilter.GaussianBlur(3))
+	blurredBackgroundAreaImage = window.backgroundAreaJPG.filter(ImageFilter.BoxBlur(5))
 	blurredDarkenedBackgroundAreaImage = ImageEnhance.Brightness(blurredBackgroundAreaImage).enhance(0.4)
 	window.backgroundAreaImage = ImageTk.PhotoImage(blurredDarkenedBackgroundAreaImage)
 	windowCanvas.coords(backgroundImage, window.left, window.top)
