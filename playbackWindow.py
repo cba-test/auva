@@ -47,6 +47,7 @@ from tkinter import font
 from PIL import Image, ImageFilter, ImageTk, ImageEnhance
 
 global window
+global darkAllDay
 
 class area:
 	top = 0
@@ -130,13 +131,14 @@ class controlArea (area):
 	buttonsAreaMid = 0
 	# all MidRatio values are arbitrary
 	titleMidRatio = 0.82
-	albumMidRatio = 0.52
+	albumMidRatio = 0.53
 	artistMidRatio = 0.27
 	textHeightModifier = 1
+	textHeightModifierMin = 0.8
 	textOverlapModifier = 10 # measured in pixels
 
-	largeButtonSize = 80
-	smallButtonSize = 60
+	largeButtonSize = 65
+	smallButtonSize = 50
 	
 	playButtonArea = area()
 	nextButtonArea = area()
@@ -159,6 +161,8 @@ class controlArea (area):
 		self.setMetaHeight()
 
 	def setMetaHeight(self):
+		self.textHeightModifier = ((self.textHeightModifier - self.textHeightModifierMin) * self.portraitModifier) + self.textHeightModifierMin
+
 		self.titleTextArea.height = int(45 * self.textHeightModifier)
 		self.albumTextArea.height = int(30 * self.textHeightModifier)
 		self.artistTextArea.height = int(30 * self.textHeightModifier)
@@ -252,14 +256,14 @@ class controlArea (area):
 		self.artistTextArea.top_from_mid()
 
 	def setMetaWidth(self, margin):
-		self.titleTextArea.left = self.left + margin
-		self.titleTextArea.width = self.width - (margin * 2)
+		self.titleTextArea.left = self.left + (margin * 1.5) 
+		self.titleTextArea.width = self.width - (margin * 3)
 
-		self.albumTextArea.left = self.left + margin
-		self.albumTextArea.width = self.width - (margin * 2)
+		self.albumTextArea.left = self.left + (margin * 1.5)
+		self.albumTextArea.width = self.width - (margin * 3)
 
-		self.artistTextArea.left = self.left + margin
-		self.artistTextArea.width = self.width - (margin * 2)
+		self.artistTextArea.left = self.left + (margin * 1.5)
+		self.artistTextArea.width = self.width - (margin * 3)
 
 class playbackWindow:
 	top = 0
@@ -303,6 +307,8 @@ class playbackWindow:
 
 	barAreaJPG = ''
 	barAreaImage = ''
+
+	currentTrack = ''
 
 	def getWindowRatio(self):
 		self.ratio = self.width / self.height
@@ -377,13 +383,13 @@ class playbackWindow:
 		self.backgroundAreaJPG = Image.open("art/gunship.jpg").resize((window.width, window.height), Image.ANTIALIAS)
 		self.backgroundAreaImage = ImageTk.PhotoImage(self.backgroundAreaJPG)
 
-		self.playButtonPNG = Image.open("art/play_button.png")
+		self.playButtonPNG = Image.open("art/play_button.png").resize((window.controlArea.playButtonArea.width, window.controlArea.playButtonArea.height), Image.ANTIALIAS)
 		self.playButtonImage = ImageTk.PhotoImage(self.playButtonPNG)
 
-		self.forwardButtonPNG = Image.open("art/forward_button.png")
+		self.forwardButtonPNG = Image.open("art/forward_button.png").resize((window.controlArea.nextButtonArea.width, window.controlArea.nextButtonArea.height), Image.ANTIALIAS)
 		self.forwardButtonImage = ImageTk.PhotoImage(self.forwardButtonPNG)
 
-		self.backButtonPNG = Image.open("art/back_button.png")
+		self.backButtonPNG = Image.open("art/back_button.png").resize((window.controlArea.previousButtonArea.width, window.controlArea.previousButtonArea.height), Image.ANTIALIAS)
 		self.backButtonImage = ImageTk.PhotoImage(self.backButtonPNG)
 
 		self.albumArtSized = Image.open("art/gunship.jpg").resize((window.artArea.art.width, window.artArea.art.height), Image.ANTIALIAS)
@@ -432,10 +438,9 @@ def resizeMainPanel(event):
 
 	windowCanvas.config(width=window.width, height=window.height)
 
-	windowCanvas.coords(backgroundRectangle,window.left, window.top, window.width, window.height)
+	# windowCanvas.coords(backgroundRectangle,window.left, window.top, window.width, window.height)
 
-	"""
-	window.backgroundAreaJPG = Image.open("art/gunship.jpg")
+	window.backgroundAreaJPG = Image.open(window.currentTrack['artFile'])
 	backgroundWidth, backgroundHeight = window.backgroundAreaJPG.size
 
 	if (window.width / backgroundWidth) < (window.height / backgroundHeight):
@@ -468,13 +473,11 @@ def resizeMainPanel(event):
 
 	print('backgroundAreaCrop (post):',window.backgroundAreaJPG.size)
 
-	# blurredBackgroundAreaImage = window.backgroundAreaJPG.filter(ImageFilter.BoxBlur(5))
-	# blurredDarkenedBackgroundAreaImage = ImageEnhance.Brightness(blurredBackgroundAreaImage).enhance(0.4)
-	blurredDarkenedBackgroundAreaImage = ImageEnhance.Brightness(window.backgroundAreaJPG).enhance(0.4)
+	blurredBackgroundAreaImage = window.backgroundAreaJPG.filter(ImageFilter.BoxBlur(5))
+	blurredDarkenedBackgroundAreaImage = ImageEnhance.Brightness(blurredBackgroundAreaImage).enhance(0.4)
 	window.backgroundAreaImage = ImageTk.PhotoImage(blurredDarkenedBackgroundAreaImage)
 	windowCanvas.coords(backgroundImage, window.left, window.top)
 	windowCanvas.itemconfig(backgroundImage, image=window.backgroundAreaImage)
-	"""
 
 	# windowCanvas.coords(barAreaRectangle, window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height)
 	# windowCanvas.coords(artAreaRectangle, window.artArea.left, window.artArea.top, window.artArea.left + window.artArea.width, window.artArea.top + window.artArea.height)
@@ -499,9 +502,9 @@ def resizeMainPanel(event):
 	windowCanvas.coords(artImage, window.artArea.art.left, window.artArea.art.top)
 	windowCanvas.itemconfig(artImage, image=window.albumArtImage)
 
-	windowCanvas.coords(titleTextAreaRectangle, window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height)
-	windowCanvas.coords(albumTextAreaRectangle, window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height)
-	windowCanvas.coords(artistTextAreaRectangle, window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height)
+	# windowCanvas.coords(titleTextAreaRectangle, window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height)
+	# windowCanvas.coords(albumTextAreaRectangle, window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height)
+	# windowCanvas.coords(artistTextAreaRectangle, window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height)
 
 	windowCanvas.coords(playButtonAreaImage, window.controlArea.playButtonArea.left + int(window.controlArea.playButtonArea.width / 2), window.controlArea.playButtonArea.top + int(window.controlArea.playButtonArea.height / 2))
 	windowCanvas.coords(nextButtonAreaImage, window.controlArea.nextButtonArea.left + int(window.controlArea.nextButtonArea.width / 2), window.controlArea.nextButtonArea.top + int(window.controlArea.nextButtonArea.height / 2))
@@ -511,7 +514,61 @@ def resizeMainPanel(event):
 	windowCanvas.coords(albumText, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top)
 	windowCanvas.coords(artistText, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top)
 
+	titleFont['size'] = -window.controlArea.titleTextArea.height
+	albumFont['size'] = -window.controlArea.albumTextArea.height
+	artistFont['size'] = -window.controlArea.artistTextArea.height
+
 	windowCanvas.update
+
+def createAlbum():
+	global darkAllDay
+	
+	track = {'title':'Woken Furies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':1, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Dark All Day', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':2, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'When You Grow Up, Your Heart Dies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':3, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'The Drone Racing League', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':4, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Rise the Midnight Girl', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':5, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Thrasher', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':6, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Black Blood Red Kiss', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':7, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Time After Time', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':8, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Honour Among Thieves', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':9, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Art3mis & Parzival', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':10, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Symmetrical', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':11, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'Cyber City', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':12, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+	track = {'title':'The Gates of Disorder', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':13, 'art':'', 'artFile':'art/gunship.jpg'}
+	darkAllDay.append(track)
+
+# prep test album
+darkAllDay = []
+createAlbum()
+
+for track in darkAllDay:
+	meta = str(track['trackNumber']) + ': ' + str(track['title'])
+	print(meta)
 
 # declare window
 window = playbackWindow()
@@ -530,6 +587,9 @@ print('window.artArea: ', window.artArea.top, window.artArea.left, window.artAre
 print('window.controlArea: ', window.controlArea.top, window.controlArea.left, window.controlArea.width, window.controlArea.height)
 print('window.controlArea.titleTextArea: ', window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.height)
 
+# create track
+window.currentTrack = darkAllDay[9]
+
 # init mainPanel
 mainPanel = Tk()
 
@@ -546,8 +606,8 @@ windowCanvas = Canvas(mainPanel, width = window.width, height = window.height, b
 windowCanvas.pack()
 
 # background rectangle
-backgroundRectangle = windowCanvas.create_rectangle(window.left, window.top, window.width, window.height, width=0, fill="#222222")
-#backgroundImage = windowCanvas.create_image(window.left, window.top, image = window.backgroundAreaImage, anchor = 'nw')
+# backgroundRectangle = windowCanvas.create_rectangle(window.left, window.top, window.width, window.height, width=0, fill="#222222")
+backgroundImage = windowCanvas.create_image(window.left, window.top, image = window.backgroundAreaImage, anchor = 'nw')
 
 # barArea rectangle
 # barAreaRectangle = windowCanvas.create_rectangle(window.barArea.left, window.barArea.top, window.barArea.left + window.barArea.width, window.barArea.top + window.barArea.height, width=0, fill="blue")
@@ -582,25 +642,25 @@ nextButtonAreaImage = windowCanvas.create_image(window.controlArea.nextButtonAre
 previousButtonAreaImage = windowCanvas.create_image(window.controlArea.previousButtonArea.left + int(window.controlArea.previousButtonArea.width / 2), window.controlArea.previousButtonArea.top + int(window.controlArea.previousButtonArea.height / 2), image = window.backButtonImage, anchor = 'center')
 
 # titleTextArea rectangle
-titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="grey")
+# titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0, fill="grey")
 # titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0)
 
 titleFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.titleTextArea.height, weight="normal")
-titleText = windowCanvas.create_text(window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top, anchor='ne', justify='right', text='Art3mis & Parzival', font=titleFont, fill='white')
+titleText = windowCanvas.create_text(window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top, anchor='ne', justify='right', text=window.currentTrack['title'], font=titleFont, fill='white')
 
 # albumTextArea rectangle
-albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="grey")
+# albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="grey")
 # albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0)
 
 albumFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.albumTextArea.height, weight="normal")
-albumText = windowCanvas.create_text(window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top, anchor='ne', justify='right', text='Dark All Day', font=albumFont, fill='white')
+albumText = windowCanvas.create_text(window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top, anchor='ne', justify='right', text=window.currentTrack['album'], font=albumFont, fill='white')
 
 # artistTextArea rectangle
-artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="grey")
+# artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="grey")
 # artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="black")
 
 artistFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.artistTextArea.height, weight="normal")
-artistText = windowCanvas.create_text(window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top, anchor='ne', justify='right', text='Gunship', font=artistFont, fill='white')
+artistText = windowCanvas.create_text(window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top, anchor='ne', justify='right', text=window.currentTrack['artist'], font=artistFont, fill='white')
 
 mainPanel.bind( "<Configure>", resizeMainPanel)
 
