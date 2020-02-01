@@ -47,7 +47,7 @@ from tkinter import font
 from PIL import Image, ImageFilter, ImageTk, ImageEnhance
 
 global window
-global darkAllDay
+global currentState
 
 class currentStateClass:
 	isPlaying = False
@@ -154,7 +154,7 @@ class controlArea (area):
 	portraitModifier = 1
 
 	buttonsMidRatio = 0.68 
-	buttonsMidRatioMin = 0.5
+	buttonsMidRatioMin = 0.55
 	buttonsAreaWidthMin = 440
 	buttonsAreaWidthMax = 500
 	buttonsAreaMid = 0
@@ -166,8 +166,8 @@ class controlArea (area):
 	textHeightModifierMin = 0.8
 	textOverlapModifier = 10 # measured in pixels
 
-	largeButtonSize = 65
-	smallButtonSize = 50
+	largeButtonSize = 60
+	smallButtonSize = 45
 	
 	playButtonArea = area()
 	nextButtonArea = area()
@@ -469,7 +469,7 @@ def resizeMainPanel(event):
 
 	# windowCanvas.coords(backgroundRectangle,window.left, window.top, window.width, window.height)
 
-	window.backgroundAreaJPG = Image.open(window.currentTrack['artFile'])
+	window.backgroundAreaJPG = Image.open(currentState.currentTrack.artFile)
 	backgroundWidth, backgroundHeight = window.backgroundAreaJPG.size
 
 	if (window.width / backgroundWidth) < (window.height / backgroundHeight):
@@ -502,7 +502,7 @@ def resizeMainPanel(event):
 
 	print('backgroundAreaCrop (post):',window.backgroundAreaJPG.size)
 
-	blurredBackgroundAreaImage = window.backgroundAreaJPG.filter(ImageFilter.BoxBlur(5))
+	blurredBackgroundAreaImage = window.backgroundAreaJPG.filter(ImageFilter.BoxBlur(20))
 	blurredDarkenedBackgroundAreaImage = ImageEnhance.Brightness(blurredBackgroundAreaImage).enhance(0.4)
 	window.backgroundAreaImage = ImageTk.PhotoImage(blurredDarkenedBackgroundAreaImage)
 	windowCanvas.coords(backgroundImage, window.left, window.top)
@@ -549,67 +549,23 @@ def resizeMainPanel(event):
 
 	windowCanvas.update
 
-def createAlbum():
-	global darkAllDay
-	
-	track = {'title':'Woken Furies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':1, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
+def createDarkAllDayAlbum(album):
+	album.append(trackType('Woken Furies', 'Dark All Day', 'Gunship', 1, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Dark All Day', 'Dark All Day', 'Gunship', 2, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('When You Grow Up, Your Heart Dies', 'Dark All Day', 'Gunship', 3, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('The Drone Racing League', 'Dark All Day', 'Gunship', 4, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Rise the Midnight Girl', 'Dark All Day', 'Gunship', 5, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Thrasher', 'Dark All Day', 'Gunship', 6, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Black Blood Red Kiss', 'Dark All Day', 'Gunship', 7, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Time After Time', 'Dark All Day', 'Gunship', 8, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Honour Among Thieves', 'Dark All Day', 'Gunship', 9, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Art3mis & Parzival', 'Dark All Day', 'Gunship', 10, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Symmetrical', 'Dark All Day', 'Gunship', 11, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Cyber City', 'Dark All Day', 'Gunship', 12, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', '', False))
 
-	track = {'title':'Dark All Day', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':2, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'When You Grow Up, Your Heart Dies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':3, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'The Drone Racing League', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':4, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Rise the Midnight Girl', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':5, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Thrasher', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':6, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Black Blood Red Kiss', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':7, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Time After Time', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':8, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Honour Among Thieves', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':9, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Art3mis & Parzival', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':10, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Symmetrical', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':11, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'Cyber City', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':12, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-	track = {'title':'The Gates of Disorder', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':13, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
-	darkAllDay.append(track)
-
-def ALTcreateAlbum():
-	testAlbum = []
-
-	testAlbum.append(trackType('Woken Furies', 'Dark All Day', 'Gunship', 1, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Dark All Day', 'Dark All Day', 'Gunship', 2, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('When You Grow Up, Your Heart Dies', 'Dark All Day', 'Gunship', 3, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('The Drone Racing League', 'Dark All Day', 'Gunship', 4, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Rise the Midnight Girl', 'Dark All Day', 'Gunship', 5, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Thrasher', 'Dark All Day', 'Gunship', 6, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Black Blood Red Kiss', 'Dark All Day', 'Gunship', 7, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Time After Time', 'Dark All Day', 'Gunship', 8, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Honour Among Thieves', 'Dark All Day', 'Gunship', 9, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Art3mis & Parzival', 'Dark All Day', 'Gunship', 10, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Symmetrical', 'Dark All Day', 'Gunship', 11, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('Cyber City', 'Dark All Day', 'Gunship', 12, '', 'art/gunship.jpg', '', '', False))
-	testAlbum.append(trackType('The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', '', False))
-
-	for element in testAlbum:
-		print(element.title)
+	for i in range(len(album)):
+		print(album[i].trackNumber,'-',album[i].title)
 
 def nextTrack(self):
 	# ensure not of last track
@@ -620,18 +576,12 @@ def previousTrack(self):
 	# else move to previous track
 	print('=== PREVIOUS TRACK ===')
 
-# prep test album
-darkAllDay = []
-createAlbum()
-
-# test class based album
-ALTcreateAlbum()
-
+# create Dark All Day album metadata
 currentState = currentStateClass()
+createDarkAllDayAlbum(currentState.currentPlaylist)
+currentState.currentTrack = currentState.currentPlaylist[9]
 
-for track in darkAllDay:
-	meta = str(track['trackNumber']) + ': ' + str(track['title'])
-	print(meta)
+print('Current Track --->',currentState.currentTrack.title)
 
 # declare window
 window = playbackWindow()
@@ -649,9 +599,6 @@ print('window.barArea: ', window.barArea.left, window.barArea.top, window.barAre
 print('window.artArea: ', window.artArea.top, window.artArea.left, window.artArea.width, window.artArea.height)
 print('window.controlArea: ', window.controlArea.top, window.controlArea.left, window.controlArea.width, window.controlArea.height)
 print('window.controlArea.titleTextArea: ', window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.height)
-
-# create track
-window.currentTrack = darkAllDay[9]
 
 # init mainPanel
 mainPanel = Tk()
@@ -709,21 +656,21 @@ previousButtonAreaImage = windowCanvas.create_image(window.controlArea.previousB
 # titleTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.titleTextArea.left, window.controlArea.titleTextArea.top, window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top + window.controlArea.titleTextArea.height, width=0)
 
 titleFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.titleTextArea.height, weight="normal")
-titleText = windowCanvas.create_text(window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top, anchor='ne', justify='right', text=window.currentTrack['title'], font=titleFont, fill='white')
+titleText = windowCanvas.create_text(window.controlArea.titleTextArea.left + window.controlArea.titleTextArea.width, window.controlArea.titleTextArea.top, anchor='ne', justify='right', text=currentState.currentTrack.title, font=titleFont, fill='white')
 
 # albumTextArea rectangle
 # albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0, fill="grey")
 # albumTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.albumTextArea.left, window.controlArea.albumTextArea.top, window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top + window.controlArea.albumTextArea.height, width=0)
 
 albumFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.albumTextArea.height, weight="normal")
-albumText = windowCanvas.create_text(window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top, anchor='ne', justify='right', text=window.currentTrack['album'], font=albumFont, fill='white')
+albumText = windowCanvas.create_text(window.controlArea.albumTextArea.left + window.controlArea.albumTextArea.width, window.controlArea.albumTextArea.top, anchor='ne', justify='right', text=currentState.currentTrack.album, font=albumFont, fill='white')
 
 # artistTextArea rectangle
 # artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="grey")
 # artistTextAreaRectangle = windowCanvas.create_rectangle(window.controlArea.artistTextArea.left, window.controlArea.artistTextArea.top, window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top + window.controlArea.artistTextArea.height, width=0, fill="black")
 
 artistFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.artistTextArea.height, weight="normal")
-artistText = windowCanvas.create_text(window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top, anchor='ne', justify='right', text=window.currentTrack['artist'], font=artistFont, fill='white')
+artistText = windowCanvas.create_text(window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top, anchor='ne', justify='right', text=currentState.currentTrack.artist, font=artistFont, fill='white')
 
 mainPanel.bind("<Configure>", resizeMainPanel)
 
