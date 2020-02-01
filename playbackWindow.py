@@ -57,8 +57,17 @@ class currentStateClass:
 	currentTrackPosition = ''
 
 class trackType():
-	# 'The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', ''
-	def __init__(self, title, album, artist, trackNumber, art, artFile, url, bookmarkTrackPosition):
+	# title - title of current track
+	# album - title of original album
+	# artist - artist of current track
+	# trackNumber - trackNumber of current track in original album
+	# art - image object for album art
+	# artFile - direct file location for artwork
+	# url - url link for stream
+	# bookmarkTrackPosition - saved track position for use with audiobooks
+	# isAudiobook - if true, use bookmarkTrackPosition by default
+
+	def __init__(self, title, album, artist, trackNumber, art, artFile, url, bookmarkTrackPosition, isAudiobook):
 		self.title = title
 		self.album = album
 		self.artist = artist
@@ -67,6 +76,7 @@ class trackType():
 		self.artFile = artFile
 		self.url = url
 		self.bookmarkTrackPosition = bookmarkTrackPosition
+		self.isAudiobook = isAudiobook
 
 class area:
 	top = 0
@@ -583,20 +593,20 @@ def createAlbum():
 
 def ALTcreateAlbum():
 	testAlbum = []
-	
-	testAlbum.append(trackType('Woken Furies', 'Dark All Day', 'Gunship', 1, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Dark All Day', 'Dark All Day', 'Gunship', 2, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('When You Grow Up, Your Heart Dies', 'Dark All Day', 'Gunship', 3, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('The Drone Racing League', 'Dark All Day', 'Gunship', 4, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Rise the Midnight Girl', 'Dark All Day', 'Gunship', 5, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Thrasher', 'Dark All Day', 'Gunship', 6, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Black Blood Red Kiss', 'Dark All Day', 'Gunship', 7, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Time After Time', 'Dark All Day', 'Gunship', 8, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Honour Among Thieves', 'Dark All Day', 'Gunship', 9, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Art3mis & Parzival', 'Dark All Day', 'Gunship', 10, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Symmetrical', 'Dark All Day', 'Gunship', 11, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('Cyber City', 'Dark All Day', 'Gunship', 12, '', 'art/gunship.jpg', '', ''))
-	testAlbum.append(trackType('The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', ''))
+
+	testAlbum.append(trackType('Woken Furies', 'Dark All Day', 'Gunship', 1, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Dark All Day', 'Dark All Day', 'Gunship', 2, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('When You Grow Up, Your Heart Dies', 'Dark All Day', 'Gunship', 3, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('The Drone Racing League', 'Dark All Day', 'Gunship', 4, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Rise the Midnight Girl', 'Dark All Day', 'Gunship', 5, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Thrasher', 'Dark All Day', 'Gunship', 6, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Black Blood Red Kiss', 'Dark All Day', 'Gunship', 7, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Time After Time', 'Dark All Day', 'Gunship', 8, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Honour Among Thieves', 'Dark All Day', 'Gunship', 9, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Art3mis & Parzival', 'Dark All Day', 'Gunship', 10, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Symmetrical', 'Dark All Day', 'Gunship', 11, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('Cyber City', 'Dark All Day', 'Gunship', 12, '', 'art/gunship.jpg', '', '', False))
+	testAlbum.append(trackType('The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', '', False))
 
 	for element in testAlbum:
 		print(element.title)
