@@ -49,6 +49,25 @@ from PIL import Image, ImageFilter, ImageTk, ImageEnhance
 global window
 global darkAllDay
 
+class currentStateClass:
+	isPlaying = False
+	currentPlaylist = [] # list of track types
+	currentTrack = ''
+	mode = 'playback'
+	currentTrackPosition = ''
+
+class trackType():
+	# 'The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', ''
+	def __init__(self, title, album, artist, trackNumber, art, artFile, url, bookmarkTrackPosition):
+		self.title = title
+		self.album = album
+		self.artist = artist
+		self.trackNumber = trackNumber
+		self.art = art
+		self.artFile = artFile
+		self.url = url
+		self.bookmarkTrackPosition = bookmarkTrackPosition
+
 class area:
 	top = 0
 	left = 0
@@ -523,44 +542,64 @@ def resizeMainPanel(event):
 def createAlbum():
 	global darkAllDay
 	
-	track = {'title':'Woken Furies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':1, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Woken Furies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':1, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Dark All Day', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':2, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Dark All Day', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':2, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'When You Grow Up, Your Heart Dies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':3, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'When You Grow Up, Your Heart Dies', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':3, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'The Drone Racing League', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':4, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'The Drone Racing League', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':4, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Rise the Midnight Girl', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':5, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Rise the Midnight Girl', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':5, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Thrasher', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':6, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Thrasher', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':6, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Black Blood Red Kiss', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':7, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Black Blood Red Kiss', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':7, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Time After Time', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':8, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Time After Time', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':8, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Honour Among Thieves', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':9, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Honour Among Thieves', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':9, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Art3mis & Parzival', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':10, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Art3mis & Parzival', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':10, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Symmetrical', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':11, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Symmetrical', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':11, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'Cyber City', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':12, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'Cyber City', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':12, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
 
-	track = {'title':'The Gates of Disorder', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':13, 'art':'', 'artFile':'art/gunship.jpg'}
+	track = {'title':'The Gates of Disorder', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':13, 'art':'', 'artFile':'art/gunship.jpg', 'url':'', 'bookmarkTrackPosition':''}
 	darkAllDay.append(track)
+
+def ALTcreateAlbum():
+	testAlbum = []
+	
+	testAlbum.append(trackType('Woken Furies', 'Dark All Day', 'Gunship', 1, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Dark All Day', 'Dark All Day', 'Gunship', 2, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('When You Grow Up, Your Heart Dies', 'Dark All Day', 'Gunship', 3, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('The Drone Racing League', 'Dark All Day', 'Gunship', 4, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Rise the Midnight Girl', 'Dark All Day', 'Gunship', 5, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Thrasher', 'Dark All Day', 'Gunship', 6, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Black Blood Red Kiss', 'Dark All Day', 'Gunship', 7, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Time After Time', 'Dark All Day', 'Gunship', 8, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Honour Among Thieves', 'Dark All Day', 'Gunship', 9, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Art3mis & Parzival', 'Dark All Day', 'Gunship', 10, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Symmetrical', 'Dark All Day', 'Gunship', 11, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('Cyber City', 'Dark All Day', 'Gunship', 12, '', 'art/gunship.jpg', '', ''))
+	testAlbum.append(trackType('The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', ''))
+
+	for element in testAlbum:
+		print(element.title)
 
 def nextTrack(self):
 	# ensure not of last track
@@ -574,6 +613,11 @@ def previousTrack(self):
 # prep test album
 darkAllDay = []
 createAlbum()
+
+# test class based album
+ALTcreateAlbum()
+
+currentState = currentStateClass()
 
 for track in darkAllDay:
 	meta = str(track['trackNumber']) + ': ' + str(track['title'])
