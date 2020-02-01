@@ -562,6 +562,15 @@ def createAlbum():
 	track = {'title':'The Gates of Disorder', 'album':'Dark All Day', 'artist':'Gunship', 'trackNumber':13, 'art':'', 'artFile':'art/gunship.jpg'}
 	darkAllDay.append(track)
 
+def nextTrack(self):
+	# ensure not of last track
+	print('=== NEXT TRACK ===')
+
+def previousTrack(self):
+	# if more than 5 seconds into track OR on first track, move to beginning of current track
+	# else move to previous track
+	print('=== PREVIOUS TRACK ===')
+
 # prep test album
 darkAllDay = []
 createAlbum()
@@ -662,6 +671,9 @@ albumText = windowCanvas.create_text(window.controlArea.albumTextArea.left + win
 artistFont = font.Font(windowCanvas, family="Tw Cen MT", size=-window.controlArea.artistTextArea.height, weight="normal")
 artistText = windowCanvas.create_text(window.controlArea.artistTextArea.left + window.controlArea.artistTextArea.width, window.controlArea.artistTextArea.top, anchor='ne', justify='right', text=window.currentTrack['artist'], font=artistFont, fill='white')
 
-mainPanel.bind( "<Configure>", resizeMainPanel)
+mainPanel.bind("<Configure>", resizeMainPanel)
+
+windowCanvas.tag_bind(nextButtonAreaImage, "<1>", nextTrack)
+windowCanvas.tag_bind(previousButtonAreaImage, "<1>", previousTrack)
 
 mainPanel.mainloop()
