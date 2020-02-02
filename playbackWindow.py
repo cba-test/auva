@@ -571,10 +571,28 @@ def nextTrack(self):
 	# ensure not of last track
 	print('=== NEXT TRACK ===')
 
+	nextTrackIndex = currentState.currentPlaylist.index(currentState.currentTrack) + 1
+	if nextTrackIndex >= len(currentState.currentPlaylist):
+		print('--- END OF PLAYLIST ---')
+	else:
+		nextTrack = currentState.currentPlaylist[nextTrackIndex]
+		print(str(nextTrack.title))
+		currentState.currentTrack = nextTrack
+		windowCanvas.itemconfigure(titleText, text=currentState.currentTrack.title)
+
 def previousTrack(self):
 	# if more than 5 seconds into track OR on first track, move to beginning of current track
 	# else move to previous track
 	print('=== PREVIOUS TRACK ===')
+
+	previousTrackIndex = currentState.currentPlaylist.index(currentState.currentTrack) - 1
+	if previousTrackIndex < 0:
+		print('--- BEGINNING OF PLAYLIST ---')
+	else:
+		previousTrack = currentState.currentPlaylist[previousTrackIndex]
+		print(str(previousTrack.title))
+		currentState.currentTrack = previousTrack
+		windowCanvas.itemconfigure(titleText, text=currentState.currentTrack.title)
 
 # create Dark All Day album metadata
 currentState = currentStateClass()
