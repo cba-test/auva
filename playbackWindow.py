@@ -46,6 +46,8 @@ from tkinter import font
 
 from PIL import Image, ImageFilter, ImageTk, ImageEnhance
 
+import vlc
+
 global window
 global currentState
 
@@ -55,6 +57,7 @@ class currentStateClass:
 	currentTrack = ''
 	mode = 'playback'
 	currentTrackPosition = ''
+	playing = ''
 
 class trackType():
 	# title - title of current track
@@ -67,11 +70,12 @@ class trackType():
 	# bookmarkTrackPosition - saved track position for use with audiobooks
 	# isAudiobook - if true, use bookmarkTrackPosition by default
 
-	def __init__(self, title, album, artist, trackNumber, art, artFile, url, bookmarkTrackPosition, isAudiobook):
+	def __init__(self, title, album, artist, trackNumber, trackFile, art, artFile, url, bookmarkTrackPosition, isAudiobook):
 		self.title = title
 		self.album = album
 		self.artist = artist
 		self.trackNumber = trackNumber
+		self.trackFile = trackFile
 		self.art = art
 		self.artFile = artFile
 		self.url = url
@@ -550,19 +554,19 @@ def resizeMainPanel(event):
 	windowCanvas.update
 
 def createDarkAllDayAlbum(album):
-	album.append(trackType('Woken Furies', 'Dark All Day', 'Gunship', 1, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Dark All Day', 'Dark All Day', 'Gunship', 2, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('When You Grow Up, Your Heart Dies', 'Dark All Day', 'Gunship', 3, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('The Drone Racing League', 'Dark All Day', 'Gunship', 4, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Rise the Midnight Girl', 'Dark All Day', 'Gunship', 5, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Thrasher', 'Dark All Day', 'Gunship', 6, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Black Blood Red Kiss', 'Dark All Day', 'Gunship', 7, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Time After Time', 'Dark All Day', 'Gunship', 8, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Honour Among Thieves', 'Dark All Day', 'Gunship', 9, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Art3mis & Parzival', 'Dark All Day', 'Gunship', 10, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Symmetrical', 'Dark All Day', 'Gunship', 11, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('Cyber City', 'Dark All Day', 'Gunship', 12, '', 'art/gunship.jpg', '', '', False))
-	album.append(trackType('The Gates of Disorder', 'Dark All Day', 'Gunship', 13, '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Woken Furies', 'Dark All Day', 'Gunship', 1, 'music/Gunship/Dark All Day/01 - Woken Furies.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Dark All Day', 'Dark All Day', 'Gunship', 2, 'music/Gunship/Dark All Day/02 - Dark All Day.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('When You Grow Up, Your Heart Dies', 'Dark All Day', 'Gunship', 3, 'music/Gunship/Dark All Day/03 - When You Grow Up, Your Heart Dies.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('The Drone Racing League', 'Dark All Day', 'Gunship', 4, 'music/Gunship/Dark All Day/04 - The Drone Racing League.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Rise the Midnight Girl', 'Dark All Day', 'Gunship', 5, 'music/Gunship/Dark All Day/05 - Rise the Midnight Girl.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Thrasher', 'Dark All Day', 'Gunship', 6, 'music/Gunship/Dark All Day/06 - Thrasher.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Black Blood Red Kiss', 'Dark All Day', 'Gunship', 7, 'music/Gunship/Dark All Day/07 - Black Blood Red Kiss.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Time After Time', 'Dark All Day', 'Gunship', 8, 'music/Gunship/Dark All Day/08 - Time After Time.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Honour Among Thieves', 'Dark All Day', 'Gunship', 9, 'music/Gunship/Dark All Day/09 - Honour Among Thieves.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Art3mis & Parzival', 'Dark All Day', 'Gunship', 10, 'music/Gunship/Dark All Day/10 - Art3mis & Parzival.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Symmetrical', 'Dark All Day', 'Gunship', 11, 'music/Gunship/Dark All Day/11 - Symmetrical.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('Cyber City', 'Dark All Day', 'Gunship', 12, 'music/Gunship/Dark All Day/12 - Cyber City.mp3', '', 'art/gunship.jpg', '', '', False))
+	album.append(trackType('The Gates of Disorder', 'Dark All Day', 'Gunship', 13, 'music/Gunship/Dark All Day/13 - The Gates of Disorder.mp3', '', 'art/gunship.jpg', '', '', False))
 
 	for i in range(len(album)):
 		print(album[i].trackNumber,'-',album[i].title)
@@ -575,9 +579,16 @@ def nextTrack(self):
 	if nextTrackIndex >= len(currentState.currentPlaylist):
 		print('--- END OF PLAYLIST ---')
 	else:
-		nextTrack = currentState.currentPlaylist[nextTrackIndex]
-		print(str(nextTrack.title))
-		currentState.currentTrack = nextTrack
+		currentState.currentTrack = currentState.currentPlaylist[nextTrackIndex]
+		print(str(currentState.currentTrack.title))
+
+		if currentState.isPlaying:
+			currentState.playing.stop()
+			currentState.playing = vlc.MediaPlayer(currentState.currentTrack.trackFile)
+			currentState.playing.play()
+		else:
+			currentState.playing = vlc.MediaPlayer(currentState.currentTrack.trackFile)
+
 		windowCanvas.itemconfigure(titleText, text=currentState.currentTrack.title)
 
 def previousTrack(self):
@@ -589,15 +600,38 @@ def previousTrack(self):
 	if previousTrackIndex < 0:
 		print('--- BEGINNING OF PLAYLIST ---')
 	else:
-		previousTrack = currentState.currentPlaylist[previousTrackIndex]
-		print(str(previousTrack.title))
-		currentState.currentTrack = previousTrack
+		currentState.currentTrack = currentState.currentPlaylist[previousTrackIndex]
+		print(str(currentState.currentTrack.title))
+
+		if currentState.isPlaying:
+			currentState.playing.stop()
+			currentState.playing = vlc.MediaPlayer(currentState.currentTrack.trackFile)
+			currentState.playing.play()
+		else:
+			currentState.playing = vlc.MediaPlayer(currentState.currentTrack.trackFile)
+
 		windowCanvas.itemconfigure(titleText, text=currentState.currentTrack.title)
+
+def playPause(self):
+	# if track is playing, stop it
+
+	if currentState.isPlaying:
+		print('=== PAUSE TRACK ===')
+		currentState.playing.pause()
+		# change playButton image to play button
+		currentState.isPlaying = False
+	else:
+		print('=== START/RESUME TRACK ===')
+		currentState.playing.play()
+		# change playButton image to pause
+		currentState.isPlaying = True
 
 # create Dark All Day album metadata
 currentState = currentStateClass()
 createDarkAllDayAlbum(currentState.currentPlaylist)
+
 currentState.currentTrack = currentState.currentPlaylist[9]
+currentState.playing = vlc.MediaPlayer(currentState.currentTrack.trackFile)
 
 print('Current Track --->',currentState.currentTrack.title)
 
@@ -692,6 +726,7 @@ artistText = windowCanvas.create_text(window.controlArea.artistTextArea.left + w
 
 mainPanel.bind("<Configure>", resizeMainPanel)
 
+windowCanvas.tag_bind(playButtonAreaImage, "<1>", playPause)
 windowCanvas.tag_bind(nextButtonAreaImage, "<1>", nextTrack)
 windowCanvas.tag_bind(previousButtonAreaImage, "<1>", previousTrack)
 
