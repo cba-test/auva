@@ -328,6 +328,9 @@ class playbackWindow:
 	playButtonPNG = ''
 	playButtonImage = ''
 
+	pauseButtonPNG = ''
+	pauseButtonImage = ''
+
 	forwardButtonPNG = ''
 	forwardButtonImage = ''
 
@@ -418,6 +421,9 @@ class playbackWindow:
 
 		self.playButtonPNG = Image.open("art/play_button.png").resize((window.controlArea.playButtonArea.width, window.controlArea.playButtonArea.height), Image.ANTIALIAS)
 		self.playButtonImage = ImageTk.PhotoImage(self.playButtonPNG)
+
+		self.pauseButtonPNG = Image.open("art/pause_button.png").resize((window.controlArea.playButtonArea.width, window.controlArea.playButtonArea.height), Image.ANTIALIAS)
+		self.pauseButtonImage = ImageTk.PhotoImage(self.pauseButtonPNG)
 
 		self.forwardButtonPNG = Image.open("art/forward_button.png").resize((window.controlArea.nextButtonArea.width, window.controlArea.nextButtonArea.height), Image.ANTIALIAS)
 		self.forwardButtonImage = ImageTk.PhotoImage(self.forwardButtonPNG)
@@ -591,6 +597,10 @@ def nextTrack(self):
 
 		windowCanvas.itemconfigure(titleText, text=currentState.currentTrack.title)
 
+		trackLength = currentState.playing.get_stats()
+		trackOutput = 'Track: ' + str(currentState.currentTrack.trackNumber) + ' - ' + str(currentState.currentTrack.title) + ' (' + str(trackLength) + ')'
+		print(trackOutput)
+
 def previousTrack(self):
 	# if more than 5 seconds into track OR on first track, move to beginning of current track
 	# else move to previous track
@@ -612,6 +622,10 @@ def previousTrack(self):
 
 		windowCanvas.itemconfigure(titleText, text=currentState.currentTrack.title)
 
+		trackLength = currentState.playing.get_stats()
+		trackOutput = 'Track: ' + str(currentState.currentTrack.trackNumber) + ' - ' + str(currentState.currentTrack.title) + ' (' + str(trackLength) + ')'
+		print(trackOutput)
+
 def playPause(self):
 	# if track is playing, stop it
 
@@ -619,18 +633,35 @@ def playPause(self):
 		print('=== PAUSE TRACK ===')
 		currentState.playing.pause()
 		# change playButton image to play button
+		windowCanvas.itemconfigure(playButtonAreaImage, image = window.playButtonImage)
 		currentState.isPlaying = False
 	else:
 		print('=== START/RESUME TRACK ===')
 		currentState.playing.play()
 		# change playButton image to pause
+		windowCanvas.itemconfigure(playButtonAreaImage, image = window.pauseButtonImage)
 		currentState.isPlaying = True
+
+def changePlaylistTrack(self):
+	# when title text is clicked, bring up tracklist window
+
+	print('=== PLAYLIST WINDOW ===')
+
+def chooseAlbum(self):
+	# when title text is clicked, bring up tracklist window
+
+	print('=== ALBUM SELECTION WINDOW ===')
+
+def chooseArtist(self):
+	# when title text is clicked, bring up tracklist window
+
+	print('=== ARTIST SELECTION WINDOW ===')
 
 # create Dark All Day album metadata
 currentState = currentStateClass()
 createDarkAllDayAlbum(currentState.currentPlaylist)
 
-currentState.currentTrack = currentState.currentPlaylist[9]
+currentState.currentTrack = currentState.currentPlaylist[0]
 currentState.playing = vlc.MediaPlayer(currentState.currentTrack.trackFile)
 
 print('Current Track --->',currentState.currentTrack.title)
@@ -729,5 +760,9 @@ mainPanel.bind("<Configure>", resizeMainPanel)
 windowCanvas.tag_bind(playButtonAreaImage, "<1>", playPause)
 windowCanvas.tag_bind(nextButtonAreaImage, "<1>", nextTrack)
 windowCanvas.tag_bind(previousButtonAreaImage, "<1>", previousTrack)
+
+windowCanvas.tag_bind(titleText, "<1>", changePlaylistTrack)
+windowCanvas.tag_bind(albumText, "<1>", chooseAlbum)
+windowCanvas.tag_bind(artistText, "<1>", chooseArtist)
 
 mainPanel.mainloop()
