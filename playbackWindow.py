@@ -47,6 +47,8 @@ from tkinter import font
 from PIL import Image, ImageFilter, ImageTk, ImageEnhance
 
 import vlc
+import eyed3
+from eyed3 import id3
 
 global window
 global currentState
@@ -576,6 +578,28 @@ def createDarkAllDayAlbum(album):
 
 	for i in range(len(album)):
 		print(album[i].trackNumber,'-',album[i].title)
+
+def getMeta(filename):
+	tag = id3.Tag()
+	tag.parse(filename)
+
+	title = tag.title
+	album = tag.album
+	artist = tag.artist
+	trackNum = tag.track_num[0]
+
+	output = str(artist) + '/ ' + str(album) + '/' + str(trackNum) + ' - ' + str(title)
+	print(output)
+
+	# fix filename to ensure it's a full address
+	track = trackType(title, album, artist, trackNum, filename, '', 'art/gunship.jpg', '', '', False)
+
+	return track
+
+def findFilesInFolder(foldername):
+	# scan through a folder checking every file for metadata
+	# pass discovered files to getMeta to collect the data
+	# contribute discovered metadata to library
 
 def nextTrack(self):
 	# ensure not of last track
