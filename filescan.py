@@ -7,6 +7,8 @@ filescan
 simple method for scanning folder structures to find file information as quickly as possible
 """
 
+import os
+
 def startFolders(libraryFolderList):
 	# creates an initial folder list, allowing the rest of the code to be as close to the final required design as possible
 
@@ -14,17 +16,37 @@ def startFolders(libraryFolderList):
 
 	return libraryFolderList
 
-def parseFolder(folder):
+def parseFolder(folderPath):
 	# looks through given folder for more folders and files
 
-	if numOfFiles > 0:
-		# yield parseFile
-		return fileData
-	else:
-		return None
+	print('folder:', folderPath)
 
-def parseFile(file):
+	folders = []
+	files = []
+
+	for r, d, f in os.walk(folderPath):
+		for folder in d:
+			folders.append(os.path.join(r, folder))
+		for file in f:
+			files.append(os.path.join(r, file))
+
+	numOfFolders = len(folders)
+	numOfFiles = len(files)
+
+	if numOfFolders > 0
+		for folder in folders:
+			yield(parseFolder(folder))
+
+	if numOfFiles > 0:
+		for file in files:
+			yield(parseFile(file))
+
+	return None
+
+def parseFile(filePath):
 	# extract header of file into fileData
+
+	print('file:', filePath)
 
 	return fileData
 
