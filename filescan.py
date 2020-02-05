@@ -48,6 +48,8 @@ def parseFile(filePath):
 
 	print('file:', filePath)
 
+	fileData = filePath.split('\')[-1]
+
 	return fileData
 
 def readFileData(fileData):
