@@ -16,41 +16,40 @@ def startFolders(libraryFolderList):
 
 	return libraryFolderList
 
+def parseLibrary(libraryFolderList):
+	for folderPath in libraryFolderList:
+		print('folder:', folderPath)
+
+		yield from parseFolder(folderPath)
+
 def parseFolder(folderPath):
 	# looks through given folder for more folders and files
 
-	print('folder:', folderPath)
+	print ('\nscan:',folderPath)
+	scan = os.scandir(folderPath)
 
-	folders = []
-	files = []
+	for entry in scan:
+		if entry.is_dir():
+			# print('folderlist',str(entry.path))
+			yield from parseFolder(entry.path)
 
-	for r, d, f in os.walk(folderPath):
-		for folder in d:
-			folders.append(os.path.join(r, folder))
-		for file in f:
-			files.append(os.path.join(r, file))
-
-	numOfFolders = len(folders)
-	numOfFiles = len(files)
-
-	if numOfFolders > 0
-		for folder in folders:
-			yield(parseFolder(folder))
-
-	if numOfFiles > 0:
-		for file in files:
-			yield(parseFile(file))
-
-	return None
+		if entry.is_file():
+			# print('parseFile',str(entry.path))
+			yield parseFile(entry.path)
 
 def parseFile(filePath):
 	# extract header of file into fileData
 
 	print('file:', filePath)
 
-	fileData = filePath.split('\')[-1]
+	fileData = filePath.split('\\')[-1]
 
-	return fileData
+	fileType = fileData.split('.')[-1]
+
+	if fileType == 'mp3' or fileType == 'flac':
+		return fileData
+	else:
+		return None
 
 def readFileData(fileData):
 	# look at fileData to determine what it is
@@ -62,4 +61,11 @@ libraryFolderList = []
 
 startFolders(libraryFolderList)
 
-print(str(libraryFolderList))
+for libraryFolder in libraryFolderList:
+	print(str(libraryFolder))
+
+library = parseLibrary(libraryFolderList)
+
+for el in library:
+	if el:
+		print('---->',str(el))
